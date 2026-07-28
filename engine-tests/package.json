@@ -1,0 +1,9 @@
+{
+  "name": "soc-roster-engine-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Regression tests for the SOC roster generation engine",
+  "scripts": {
+    "test": "node roster-engine.test.js"
+  }
+}
