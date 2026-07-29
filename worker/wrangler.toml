@@ -1,0 +1,25 @@
+name = "soc-roster-hub"
+main = "src/index.js"
+compatibility_date = "2024-09-23"
+
+[[kv_namespaces]]
+binding = "SOC_TOKENS"
+id = "<your-soc-tokens-kv-id>"
+
+[[kv_namespaces]]
+binding = "ADMIN_ALLOWLIST"
+id = "<your-admin-allowlist-kv-id>"
+
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "<your-rate-limit-kv-id>"
+
+[vars]
+SHEET_ID = "1MY9aFaaUdSmqUP2V3gXt0emNMONlubgOfVqoV2mLpoY"
+APPS_SCRIPT_URL = "<your-apps-script-url>"
+
+# Secrets (set via: wrangler secret put <NAME>)
+# SA_EMAIL
+# SA_PRIVATE_KEY
+# GOOGLE_CLIENT_ID
+# GOOGLE_CLIENT_SECRET

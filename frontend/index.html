@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SOC Roster Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/roster-builder.css">
+<script src="config.js"></script>
 <style>
 :root {
   --bg:      #07090f;
@@ -545,15 +547,14 @@ body.light table.tt tbody tr.me .td-wo-count{background:#bfdbfe;}
 </div>
 
 <script src="https://accounts.google.com/gsi/client" async></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<script src="modules/admin/roster-builder-ui.js"></script>
+<script src="modules/admin/roster-engine.js"></script>
 <script>
 /* ══════════════════════════════════════════════════════
    CONFIG
 ══════════════════════════════════════════════════════ */
-const SHEET_ID       = '1MY9aFaaUdSmqUP2V3gXt0emNMONlubgOfVqoV2mLpoY';
-const APPS_SCRIPT_URL = 'https://soc-roster-proxy.navoneel-itorizin-87e.workers.dev';
-const CLIENT_ID   = '135332498104-1jlvua53i6ujahtov3enj1och1ln3o0o.apps.googleusercontent.com';
-const ADMIN_EMAIL = 'navoneel.itorizin@gmail.com';
-const SCOPES      = 'openid email profile https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/gmail.send';
+const SCOPES = 'openid email profile https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/gmail.send';
 
 const MONTH_ORDER = ['January','February','March','April','May','June',
                      'July','August','September','October','November','December'];
@@ -749,7 +750,11 @@ async function handleToken(resp) {
     const info = await apiFetch('https://www.googleapis.com/oauth2/v3/userinfo');
     userEmail = info.email;
     userName  = info.name || info.email.split('@')[0];
-    isAdmin   = userEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+    
+    // Check admin status securely from Worker KV
+    const adminResp = await callWorker({ action: 'checkAdminStatus' });
+    isAdmin   = adminResp.isAdmin;
+    
     // Also check Employee_Master for admin flag (supports multiple admins)
     // This is re-checked after employeeMaster loads in initApp()
     await initApp();
@@ -807,42 +812,12 @@ async function apiFetch(url, opts = {}) {
   return resp.json();
 }
 
-async function sheetsRead(range) {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`;
-  const data = await apiFetch(url);
-  return data.values || [];
-}
-
-async function sheetsWrite(range, values) {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`;
-  return apiFetch(url, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ values })
-  });
-}
-
-async function sheetsAppend(sheetName, values) {
-  const range = encodeURIComponent(sheetName + '!A1');
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`;
-  try {
-    return await apiFetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ range: sheetName + '!A1', majorDimension: 'ROWS', values })
-    });
-  } catch(e) {
-    console.error('sheetsAppend error:', e);
-    throw new Error('Write failed: ' + e.message + '. Try signing out and back in.');
-  }
-}
-
 // ── Cloudflare Worker proxy caller ──
-async function callAppsScript(payload) {
-  const resp = await fetch(APPS_SCRIPT_URL, {
+async function callWorker(payload) {
+  const resp = await fetch(WORKER_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...payload, token: token })
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify(payload)
   });
   if (!resp.ok) throw new Error('Worker HTTP ' + resp.status);
   const data = await resp.json();
@@ -856,15 +831,9 @@ async function callAppsScript(payload) {
 async function initApp() {
   showLoading('Loading roster data…');
 
-  // Get available month sheets
-  const meta = await apiFetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}?fields=sheets.properties.title`);
-  availableMonths = meta.sheets
-    .map(s => s.properties.title)
-    .filter(t => MONTH_ORDER.some(m => t === m + '_' + t.split('_')[1] && /^\d{4}$/.test(t.split('_')[1])))
-    .sort((a, b) => {
-      const [ma, ya] = a.split('_'), [mb, yb] = b.split('_');
-      return ya !== yb ? +ya - +yb : MONTH_ORDER.indexOf(ma) - MONTH_ORDER.indexOf(mb);
-    });
+  // Get available month sheets securely via Worker
+  const metaResp = await callWorker({ action: 'getAvailableMonths' });
+  availableMonths = metaResp.data;
 
   // Default to most recent month
   selectedMonth = availableMonths[availableMonths.length - 1] || 'March_2026';
@@ -877,13 +846,18 @@ async function initApp() {
 
   // Load Employee_Master
   showLoading('Loading employee data…');
-  const empRows = await sheetsRead('Employee_Master!A3:F25');
+  const resEmp = await callWorker({ action: 'getEmployeeMaster' });
+  const empRows = resEmp.data;
   employeeMaster = empRows
     .filter(r => r[1])
     .map(r => ({
       slNo: r[0], name: r[1]?.trim(), role: r[2],
       email: r[3]?.trim().toLowerCase(), shiftGroup: r[4], isAdmin: r[5] === 'Yes'
     }));
+
+  if (typeof RosterBuilder !== 'undefined') {
+    RosterBuilder.initEmps(employeeMaster);
+  }
 
   // Re-check admin from Employee_Master (supports multiple admins beyond ADMIN_EMAIL)
   const empRecord = employeeMaster.find(e => e.email === userEmail.toLowerCase());
@@ -954,8 +928,8 @@ function getTodayDay(sheetName) {
 async function getRoster(month) {
   if (rosterCache[month]) return rosterCache[month];
   const days = getDaysInMonth(month);
-  const lastCol = colLetter(days + 2);
-  const rows = await sheetsRead(`${month}!A4:${lastCol}22`);
+  const res = await callWorker({ action: 'getRoster', month });
+  const rows = res.data;
   rosterCache[month] = rows;
   return rows;
 }
@@ -1196,7 +1170,7 @@ async function submitLeaveRequest(dayKey, currentCode, empName, dateStr) {
   const notes   = document.getElementById('req-notes').value;
 
   try {
-    await callAppsScript({
+    await callWorker({
       action:        'submitRequest',
       month:         selectedMonth.replace('_', ' '),
       empName:       empName,
@@ -1785,6 +1759,10 @@ async function loadAdminPanel() {
 
     html += `</div></div>`;
 
+    if (typeof RosterBuilderUI !== 'undefined') {
+      html += RosterBuilderUI;
+    }
+
     el.innerHTML = html;
   } catch(e) {
     el.innerHTML = `<div class="err-box" style="display:block">❌ ${e.message}</div>`;
@@ -1793,7 +1771,8 @@ async function loadAdminPanel() {
 
 async function loadLeaveLog() {
   if (leaveLogCache) return leaveLogCache;
-  const rows = await sheetsRead('Leave_Swap_Log!A3:L500');
+  const res = await callWorker({ action: 'getLeaveLog' });
+  const rows = res.data;
   leaveLogCache = rows.filter(r => r[0]);
   return leaveLogCache;
 }
@@ -1850,7 +1829,7 @@ async function saveShiftEdit(empRowIdx, day, oldCode, empName) {
   if (newCode === oldCode) { closeModal(); return; }
 
   try {
-    await callAppsScript({
+    await callWorker({
       action:       'editShift',
       month:        selectedMonth,
       empRowIndex:  empRowIdx,
@@ -1899,7 +1878,7 @@ async function saveShiftEdit(empRowIdx, day, oldCode, empName) {
 /* ── Approve / Reject Request ── */
 async function processRequest(localIdx, action, reqId, empName, dateStr, newCode) {
   try {
-    await callAppsScript({
+    await callWorker({
       action:     'processRequest',
       reqId:      reqId,
       decision:   action,
@@ -2087,7 +2066,7 @@ async function checkAndRefreshUI() {
   }
 
   try {
-    const result = await callAppsScript({ action: 'getSyncFlag' });
+    const result = await callWorker({ action: 'getSyncFlag' });
     if (!result || !result.ts) return; // No flag in Sync_Flags yet — skip silently.
 
     const serverTs    = new Date(result.ts).getTime();
@@ -2353,7 +2332,7 @@ function toggleDayHighlight(dayNum, headerTh) {
 // Called on login — updates badge to show if KV token already exists
 async function checkServerSyncStatus() {
   try {
-    const result = await callAppsScript({ action: 'checkServerSync' });
+    const result = await callWorker({ action: 'checkServerSync' });
     updateServerSyncUI(result.enabled === true);
   } catch(e) {
     console.warn('[ServerSync] status check failed:', e.message);
@@ -2400,7 +2379,7 @@ async function handleAuthCode(resp) {
   if (btn)   { btn.disabled = true; btn.textContent = 'Setting up…'; }
 
   try {
-    const result = await callAppsScript({ action: 'storeRefreshToken', code: resp.code });
+    const result = await callWorker({ action: 'storeRefreshToken', code: resp.code });
     if (!result.ok && result.error === 'no_refresh_token') {
       showToast('⚠️ Google did not return a refresh token. Revoke app access at myaccount.google.com/permissions and try again.');
       updateServerSyncUI(false);
@@ -2419,7 +2398,7 @@ async function handleAuthCode(resp) {
 // Remove the stored token from KV
 async function revokeServerSync() {
   try {
-    await callAppsScript({ action: 'revokeServerSync' });
+    await callWorker({ action: 'revokeServerSync' });
     showToast('🗑️ Background sync revoked — calendar will only sync when you\'re logged in.');
     updateServerSyncUI(false);
   } catch(e) {

@@ -3,3 +3,6 @@ node_modules/
 *.key
 service-account*.json
 .wrangler/
+
+*.json
+!package.json
