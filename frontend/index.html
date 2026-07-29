@@ -1,0 +1,2446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOC Roster Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #07090f;
+  --s1:      #0c111d;
+  --s2:      #111827;
+  --s3:      #1a2235;
+  --border:  #1e2d45;
+  --border2: #253553;
+  --accent:  #00d4ff;
+  --a2:      #0099cc;
+  --green:   #10b981;
+  --yellow:  #f59e0b;
+  --red:     #ef4444;
+  --orange:  #f97316;
+  --purple:  #8b5cf6;
+  --text:    #e2e8f0;
+  --text2:   #94a3b8;
+  --muted:   #475569;
+  --card:    #0c111d;
+  --radius:  10px;
+}
+body.light {
+  --bg:      #dbeafe;
+  --s1:      #eff6ff;
+  --s2:      #dbeafe;
+  --s3:      #bfdbfe;
+  --border:  #93c5fd;
+  --border2: #60a5fa;
+  --accent:  #1d6fc4;
+  --a2:      #1557a0;
+  --green:   #047857;
+  --yellow:  #b45309;
+  --red:     #b91c1c;
+  --orange:  #c2410c;
+  --purple:  #6d28d9;
+  --text:    #0f172a;
+  --text2:   #1e3a5f;
+  --muted:   #3b6ea5;
+  --card:    #eff6ff;
+  --radius:  10px;
+}
+body.light::before { background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(29,111,196,.09), transparent); }
+body.light .app-header { background:rgba(219,234,254,.97); border-bottom:1px solid #93c5fd; }
+body.light .tab-nav { background:#dbeafe; border-bottom:1px solid #93c5fd; }
+body.light .tab-btn { color:#3b6ea5; }
+body.light .tab-btn.active { color:#1d6fc4; border-bottom-color:#1d6fc4; }
+body.light .tab-btn:hover { color:#0f172a; }
+body.light .month-sel { background:#eff6ff; border-color:#93c5fd; color:#0f172a; }
+body.light .btn-sm { border-color:#93c5fd; color:#1e3a5f; }
+body.light .btn-sm:hover { border-color:#1d6fc4; color:#1d6fc4; }
+
+/* ── Light mode: vivid shift chip colors — each uniquely distinct ── */
+body.light .sh-MS  { background:#2563eb; color:#ffffff; font-weight:800; }
+body.light .sh-GS  { background:#059669; color:#ffffff; font-weight:800; }
+body.light .sh-AS  { background:#d97706; color:#ffffff; font-weight:800; }
+body.light .sh-NS  { background:#7c3aed; color:#ffffff; font-weight:800; }
+body.light .sh-WFH { background:#0891b2; color:#ffffff; font-weight:800; }
+body.light .sh-WO  { background:#94a3b8; color:#1e293b; font-weight:700; }
+body.light .sh-VL  { background:#e11d48; color:#ffffff; font-weight:800; }
+body.light .sh-CL  { background:#991b1b; color:#ffffff; font-weight:800; }
+body.light .sh-SL  { background:#c2410c; color:#ffffff; font-weight:800; }
+body.light .sh-CO  { background:#b45309; color:#ffffff; font-weight:800; }
+body.light .sh-GH  { background:#0d9488; color:#ffffff; font-weight:800; }
+
+/* ── Light mode: vivid shift cell backgrounds (My Shifts grid) ── */
+body.light .bg-MS  { background:#eff6ff; border:2px solid #2563eb; }
+body.light .bg-GS  { background:#f0fdf4; border:2px solid #059669; }
+body.light .bg-AS  { background:#fffbeb; border:2px solid #d97706; }
+body.light .bg-NS  { background:#f5f3ff; border:2px solid #7c3aed; }
+body.light .bg-WFH { background:#ecfeff; border:2px solid #0891b2; }
+body.light .bg-WO  { background:#f1f5f9; border:2px solid #94a3b8; }
+body.light .bg-VL  { background:#fff1f2; border:2px solid #e11d48; }
+body.light .bg-CL  { background:#fef2f2; border:2px solid #991b1b; }
+body.light .bg-SL  { background:#fff7ed; border:2px solid #c2410c; }
+body.light .bg-CO  { background:#fefce8; border:2px solid #b45309; }
+body.light .bg-GH  { background:#f0fdfa; border:2px solid #0d9488; }
+/* text inside shift cells — bold, fully dark */
+body.light .bg-MS .code  { color:#1d4ed8; font-weight:900; }
+body.light .bg-GS .code  { color:#047857; font-weight:900; }
+body.light .bg-AS .code  { color:#b45309; font-weight:900; }
+body.light .bg-NS .code  { color:#6d28d9; font-weight:900; }
+body.light .bg-WFH .code { color:#0e7490; font-weight:900; }
+body.light .bg-WO .code  { color:#475569; font-weight:800; }
+body.light .bg-VL .code  { color:#be123c; font-weight:900; }
+body.light .bg-CL .code  { color:#991b1b; font-weight:900; }
+body.light .bg-SL .code  { color:#c2410c; font-weight:900; }
+body.light .bg-CO .code  { color:#92400e; font-weight:900; }
+body.light .bg-GH .code  { color:#0f766e; font-weight:900; }
+body.light .sc .dn { color:rgba(15,23,42,.45); }
+body.light .sc.today-cell .dn { color:#1d6fc4; }
+
+/* ── Light mode: table ── */
+body.light table.tt tbody tr { border-bottom-color:rgba(96,165,250,.4); }
+body.light table.tt tbody tr:hover { background:rgba(29,111,196,.09); }
+body.light table.tt tbody tr.me  { background:rgba(29,111,196,.15); }
+/* Sticky name cell — keep it light on hover, never go dark */
+body.light table.tt td.td-name               { background:#eff6ff; color:#0f172a; font-weight:700; }
+body.light table.tt tbody tr:hover td.td-name { background:#dbeafe; color:#0f172a; }
+body.light table.tt tbody tr.me td.td-name   { background:#bfdbfe; color:#0f172a; }
+body.light table.tt thead tr.r-dates th      { background:#bfdbfe; color:#0f172a; font-weight:800; font-size:.75rem; }
+body.light table.tt thead tr.r-dates th.th-name { background:#bfdbfe; }
+body.light table.tt thead tr.r-dow th        { background:#dbeafe; color:#1e40af; font-weight:700; font-size:.65rem; }
+body.light table.tt thead tr.r-dow th.th-name { background:#dbeafe; }
+body.light .wk { background:rgba(96,165,250,.15); }
+body.light .td-today { background:rgba(29,111,196,.12) !important; }
+body.light .rc-WO { background:#cbd5e1; color:#1e293b; opacity:1; font-weight:700; }
+
+/* ── Light mode: stat boxes, cards ── */
+body.light .stat-box { background:#eff6ff; border-color:#93c5fd; }
+body.light .card     { background:#eff6ff; border-color:#93c5fd; }
+body.light .card-sm  { background:#dbeafe; border-color:#93c5fd; }
+body.light .req-card { background:#dbeafe; border-color:#93c5fd; }
+body.light .ttable-wrap { border-color:#93c5fd; }
+body.light .search-wrap input { background:#eff6ff; border-color:#93c5fd; color:#0f172a; }
+body.light .fbtn { border-color:#93c5fd; color:#3b6ea5; }
+body.light .fbtn:hover { border-color:#1d6fc4; color:#1d6fc4; }
+body.light .fbtn.on { background:rgba(29,111,196,.15); border-color:#1d6fc4; color:#1d6fc4; }
+
+/* ── Light mode: scrollbar ── */
+body.light ::-webkit-scrollbar-track { background:#dbeafe; }
+body.light ::-webkit-scrollbar-thumb { background:#93c5fd; }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(0,212,255,.07),transparent);pointer-events:none;z-index:0;}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:var(--s1);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ─── Login Screen ─── */
+#login-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:100;background:var(--bg);}
+.login-card{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:48px 40px;text-align:center;max-width:420px;width:90%;position:relative;overflow:hidden;}
+.login-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,212,255,.04),transparent 60%);pointer-events:none;}
+.login-logo{font-size:3rem;margin-bottom:16px;display:block;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.login-card h1{font-size:1.8rem;font-weight:800;letter-spacing:-.03em;margin-bottom:8px;}
+.login-card h1 span{color:var(--accent);}
+.login-card .sub{font-size:.85rem;color:var(--text2);margin-bottom:8px;line-height:1.6;}
+.login-card .org{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);margin-bottom:32px;background:var(--s2);padding:4px 12px;border-radius:20px;display:inline-block;border:1px solid var(--border);}
+.btn-signin{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),var(--a2));border:none;border-radius:var(--radius);color:#000;font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;letter-spacing:.01em;}
+.btn-signin:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,212,255,.35);}
+.btn-signin svg{width:20px;height:20px;}
+.login-note{margin-top:16px;font-size:.72rem;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+
+/* ─── Loading ─── */
+#loading-screen{position:fixed;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;background:var(--bg);z-index:99;}
+.spin{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loading-screen p{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--text2);}
+
+/* ─── Main App ─── */
+#main-app{display:none;min-height:100vh;position:relative;z-index:1;}
+
+/* ─── Header ─── */
+.app-header{display:flex;align-items:center;gap:12px;padding:16px 24px;border-bottom:1px solid var(--border);background:rgba(7,9,15,.9);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50;}
+.hdr-logo{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),#0077aa);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.hdr-title{font-size:1.05rem;font-weight:700;letter-spacing:-.02em;}
+.hdr-user{font-size:.72rem;color:var(--text2);font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:6px;margin-top:2px;}
+.hdr-user .admin-badge{background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.3);color:var(--accent);padding:1px 8px;border-radius:10px;font-size:.65rem;font-weight:600;}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.month-sel{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--text);font-family:'Syne',sans-serif;font-size:.8rem;font-weight:600;outline:none;cursor:pointer;transition:border-color .2s;}
+.month-sel:focus{border-color:var(--accent);}
+.btn-sm{padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-sm:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ─── Tab Nav ─── */
+.tab-nav{display:flex;gap:2px;padding:0 24px;border-bottom:1px solid var(--border);background:var(--s1);}
+.tab-btn{padding:12px 20px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;margin-bottom:-1px;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab-btn .badge{background:var(--red);color:#fff;font-size:.62rem;padding:1px 6px;border-radius:10px;font-family:'JetBrains Mono',monospace;}
+
+/* ─── Tab Content ─── */
+.tab-content{display:none;padding:24px;animation:fadeUp .25s ease;}
+.tab-content.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── Section Headers ─── */
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+.sec-hdr h2{font-size:1.15rem;font-weight:700;letter-spacing:-.02em;}
+.sec-hdr p{font-size:.78rem;color:var(--text2);margin-top:3px;}
+
+/* ─── Cards ─── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;}
+.card-sm{background:var(--s2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;}
+
+/* ─── Stat Row ─── */
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:22px;}
+.stat-box{background:var(--s2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center;}
+.stat-box .n{font-size:1.6rem;font-weight:700;font-family:'JetBrains Mono',monospace;line-height:1;}
+.stat-box .l{font-size:.65rem;color:var(--text2);margin-top:4px;text-transform:uppercase;letter-spacing:.06em;}
+
+/* ─── Shift Grid (My Shifts) ─── */
+.shift-legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+.leg{display:flex;align-items:center;gap:4px;font-size:.68rem;font-family:'JetBrains Mono',monospace;color:var(--text2);}
+.leg-dot{width:10px;height:10px;border-radius:3px;}
+.sg-wrap{overflow-x:auto;}
+.sg{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;min-width:340px;}
+.dh{text-align:center;font-size:.6rem;font-family:'JetBrains Mono',monospace;color:var(--muted);padding:3px 0;letter-spacing:.08em;text-transform:uppercase;}
+.sc{border-radius:8px;padding:8px 4px;text-align:center;min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:1px solid transparent;transition:all .18s;cursor:pointer;position:relative;}
+.sc:hover{transform:scale(1.06);z-index:2;filter:brightness(1.1);}
+.sc .dn{font-size:.6rem;color:rgba(255,255,255,.5);font-family:'JetBrains Mono',monospace;}
+.sc .code{font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700;letter-spacing:.03em;}
+.sc .tm{font-size:.54rem;opacity:.7;font-family:'JetBrains Mono',monospace;}
+.sc.today-cell{outline:2px solid var(--accent);outline-offset:1px;}
+.sc.today-cell .dn{color:var(--accent);}
+/* request dot */
+.sc .req-dot{position:absolute;top:3px;right:3px;width:5px;height:5px;border-radius:50%;background:var(--yellow);}
+
+/* ─── Team Table ─── */
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+.search-wrap{position:relative;flex:1;min-width:160px;}
+.search-wrap input{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:8px 12px 8px 34px;color:var(--text);font-family:'Syne',sans-serif;font-size:.82rem;outline:none;transition:border-color .2s;}
+.search-wrap input:focus{border-color:var(--accent);}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:.85rem;pointer-events:none;}
+.fbtns{display:flex;gap:5px;flex-wrap:wrap;}
+.fbtn{padding:6px 11px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:.68rem;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.fbtn:hover{border-color:var(--accent);color:var(--accent);}
+.fbtn.on{border-color:rgba(0,212,255,.5);background:rgba(0,212,255,.1);color:var(--accent);}
+.fbtn.on.f-GS{border-color:rgba(16,185,129,.5);background:rgba(16,185,129,.1);color:var(--green);}
+.fbtn.on.f-AS{border-color:rgba(245,158,11,.5);background:rgba(245,158,11,.1);color:var(--yellow);}
+.fbtn.on.f-NS{border-color:rgba(139,92,246,.5);background:rgba(139,92,246,.1);color:var(--purple);}
+.fbtn.on.f-WFH{border-color:rgba(6,182,212,.5);background:rgba(6,182,212,.1);color:#22d3ee;}
+
+.ttable-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);}
+table.tt{width:100%;border-collapse:collapse;min-width:860px;}
+table.tt thead tr.r-dates th{background:var(--s2);font-size:.68rem;font-family:'JetBrains Mono',monospace;color:var(--text2);padding:7px 3px;text-align:center;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;min-width:32px;}
+table.tt thead tr.r-dates th.th-name{text-align:left;padding-left:14px;min-width:160px;position:sticky;left:0;background:var(--s2);z-index:20;}
+table.tt thead tr.r-dow th{background:var(--card);font-size:.6rem;font-family:'JetBrains Mono',monospace;color:var(--muted);padding:3px;text-align:center;border-bottom:2px solid var(--border);}
+table.tt thead tr.r-dow th.th-name{position:sticky;left:0;background:var(--card);z-index:20;}
+table.tt tbody tr{border-bottom:1px solid rgba(30,45,69,.4);transition:background .12s;}
+table.tt tbody tr:hover{background:rgba(0,212,255,.03);}
+table.tt tbody tr.me{background:rgba(0,212,255,.06);}
+table.tt tbody tr.hidden{display:none;}
+table.tt td{padding:3px 2px;text-align:center;vertical-align:middle;}
+table.tt td.td-name{text-align:left;padding:6px 10px 6px 14px;font-size:.78rem;font-weight:600;white-space:nowrap;position:sticky;left:0;background:var(--card);z-index:5;border-right:1px solid var(--border);}
+table.tt tbody tr:hover td.td-name{background:rgba(12,17,29,.95);}
+table.tt tbody tr.me td.td-name{background:rgba(0,20,38,.9);}
+/* light mode overrides for these are in body.light block above */
+.emp-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:middle;flex-shrink:0;}
+.wk{background:rgba(0,0,0,.1);}
+.td-today{background:rgba(0,212,255,.06)!important;}
+
+/* ─── Roster Chips ─── */
+.rc{display:inline-flex;align-items:center;justify-content:center;width:30px;height:24px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:700;}
+.rc-dim{opacity:.25;}
+.rc.rc-WO{font-size:.55rem;opacity:.5;letter-spacing:.02em;}
+.rc.editable{cursor:pointer;transition:transform .1s;}
+.rc.editable:hover{transform:scale(1.15);z-index:2;position:relative;}
+
+/* ─── Shift color classes — each shift has a unique distinct color ─── */
+/* MS  — Steel blue   */ .sh-MS  {background:rgba( 59,130,246,.28);color:#93c5fd;}
+/* GS  — Emerald      */ .sh-GS  {background:rgba( 16,185,129,.28);color:#6ee7b7;}
+/* AS  — Amber        */ .sh-AS  {background:rgba(245,158, 11,.28);color:#fcd34d;}
+/* NS  — Indigo       */ .sh-NS  {background:rgba( 99, 91,255,.28);color:#c4b5fd;}
+/* WFH — Cyan (all)   */ .sh-WFH {background:rgba(  6,182,212,.22);color:#67e8f9;}
+/* WO  — Slate grey   */ .sh-WO  {background:rgba( 71, 85,105,.22);color:#94a3b8;}
+/* VL  — Rose         */ .sh-VL  {background:rgba(244, 63, 94,.28);color:#fda4af;}
+/* CL  — Dark crimson */ .sh-CL  {background:rgba(185, 28, 28,.45);color:#fca5a5;}
+/* SL  — Dark orange  */ .sh-SL  {background:rgba(194, 65,  12,.45);color:#fdba74;}
+/* CO  — Gold         */ .sh-CO  {background:rgba(234,179,  8,.28);color:#fef08a;}
+/* GH  — Teal         */ .sh-GH  {background:rgba( 20,184,166,.28);color:#5eead4;}
+
+/* shift cell background (My Shifts grid) */
+.bg-MS  {background:rgba( 59,130,246,.20);border-color:rgba( 59,130,246,.45);}
+.bg-GS  {background:rgba( 16,185,129,.20);border-color:rgba( 16,185,129,.45);}
+.bg-AS  {background:rgba(245,158, 11,.20);border-color:rgba(245,158, 11,.45);}
+.bg-NS  {background:rgba( 99, 91,255,.20);border-color:rgba( 99, 91,255,.45);}
+.bg-WFH {background:rgba(  6,182,212,.18);border-color:rgba(  6,182,212,.38);}
+.bg-WO  {background:rgba( 30, 45, 69,.38);border-color:var(--border);}
+.bg-VL  {background:rgba(244, 63, 94,.20);border-color:rgba(244, 63, 94,.45);}
+.bg-CL  {background:rgba(185, 28, 28,.40);border-color:rgba(220, 38, 38,.60);}
+.bg-SL  {background:rgba(194, 65,  12,.40);border-color:rgba(234, 88, 12,.60);}
+.bg-CO  {background:rgba(234,179,  8,.20);border-color:rgba(234,179,  8,.45);}
+.bg-GH  {background:rgba( 20,184,166,.20);border-color:rgba( 20,184,166,.45);}
+
+/* ─── Buttons ─── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:8px;border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;letter-spacing:.01em;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--a2));color:#000;}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(0,212,255,.35);}
+.btn-primary:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.btn-success{background:linear-gradient(135deg,var(--green),#059669);color:#fff;}
+.btn-success:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(16,185,129,.35);}
+.btn-success:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.btn-danger{background:linear-gradient(135deg,var(--red),#dc2626);color:#fff;}
+.btn-danger:hover{transform:translateY(-1px);}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text2);}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ─── Info / Error Boxes ─── */
+.info-box{background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.2);border-radius:var(--radius);padding:12px 15px;font-size:.78rem;color:rgba(0,212,255,.9);line-height:1.7;margin-bottom:16px;}
+.warn-box{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.25);border-radius:var(--radius);padding:12px 15px;font-size:.78rem;color:rgba(245,158,11,.9);line-height:1.7;margin-bottom:16px;}
+.err-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:11px 14px;font-size:.78rem;color:var(--red);margin:10px 0;display:none;}
+.success-box{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);border-radius:8px;padding:11px 14px;font-size:.78rem;color:var(--green);margin:10px 0;display:none;}
+
+/* ─── Progress ─── */
+.prog-wrap{margin-top:12px;}
+.prog-lbl{display:flex;justify-content:space-between;font-size:.7rem;font-family:'JetBrains Mono',monospace;color:var(--text2);margin-bottom:4px;}
+.prog-bar{height:5px;background:var(--border);border-radius:10px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));width:0%;border-radius:10px;transition:width .4s ease;}
+
+/* ─── Admin ─── */
+.admin-section{margin-bottom:28px;}
+.admin-section h3{font-size:.95rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.admin-section h3 .cnt{background:var(--red);color:#fff;font-size:.65rem;padding:2px 7px;border-radius:10px;font-family:'JetBrains Mono',monospace;}
+
+.req-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.req-info{flex:1;min-width:200px;}
+.req-info .req-id{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);margin-bottom:4px;}
+.req-info .req-emp{font-weight:700;font-size:.88rem;margin-bottom:2px;}
+.req-info .req-det{font-size:.76rem;color:var(--text2);}
+.req-status{padding:4px 10px;border-radius:20px;font-size:.68rem;font-family:'JetBrains Mono',monospace;font-weight:700;}
+.req-status.pending{background:rgba(245,158,11,.15);color:var(--yellow);border:1px solid rgba(245,158,11,.3);}
+.req-status.approved{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3);}
+.req-status.rejected{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3);}
+.req-actions{display:flex;gap:6px;}
+
+.audit-row{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(30,45,69,.4);font-size:.76rem;}
+.audit-row:last-child{border-bottom:none;}
+.audit-time{font-family:'JetBrains Mono',monospace;color:var(--muted);font-size:.68rem;white-space:nowrap;min-width:130px;}
+
+/* ─── Modal ─── */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(4px);}
+#modal-overlay.show{display:flex;}
+.modal-box{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:460px;width:90%;animation:fadeUp .2s ease;max-height:90vh;overflow-y:auto;}
+.modal-box h3{font-size:1rem;font-weight:700;margin-bottom:16px;}
+.modal-field{margin-bottom:14px;}
+.modal-field label{display:block;font-size:.72rem;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase;}
+.modal-field select,.modal-field input,.modal-field textarea{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Syne',sans-serif;font-size:.82rem;outline:none;transition:border-color .2s;}
+.modal-field select:focus,.modal-field input:focus,.modal-field textarea:focus{border-color:var(--accent);}
+.modal-field textarea{resize:vertical;min-height:70px;}
+.modal-btns{display:flex;gap:8px;margin-top:18px;justify-content:flex-end;}
+
+/* ─── Empty state ─── */
+.empty{text-align:center;padding:48px 20px;}
+.empty-icon{font-size:2.5rem;margin-bottom:12px;opacity:.5;}
+.empty p{font-size:.85rem;color:var(--text2);}
+
+/* ─── Shift edit picker ─── */
+.shift-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px;}
+.sp-btn{padding:8px 4px;border-radius:6px;border:1px solid var(--border);background:var(--s2);color:var(--text2);font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:700;cursor:pointer;text-align:center;transition:all .15s;}
+.sp-btn:hover{transform:scale(1.05);}
+.sp-btn.selected{outline:2px solid var(--accent);outline-offset:1px;}
+
+/* ─── Sync result ─── */
+.sync-done{background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(0,212,255,.06));border:1px solid rgba(16,185,129,.25);border-radius:12px;padding:22px;text-align:center;margin-top:16px;}
+.sync-done h3{color:var(--green);font-size:1.1rem;margin-bottom:8px;}
+.sync-done p{font-size:.8rem;color:var(--text2);line-height:1.6;}
+.sync-done .sync-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0;}
+
+/* ── Calendar controls bar ── */
+.cal-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
+.cal-info{font-size:.72rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:4px;}
+.toggle-wrap{display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:600;}
+.toggle{position:relative;width:40px;height:22px;cursor:pointer;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:var(--border);border-radius:22px;transition:.3s;}
+.toggle-slider:before{content:'';position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.3s;}
+.toggle input:checked + .toggle-slider{background:var(--green);}
+.toggle input:checked + .toggle-slider:before{transform:translateX(18px);}
+.desync-btn{padding:7px 13px;border-radius:8px;border:1px solid rgba(239,68,68,.4);background:transparent;color:var(--red);font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.desync-btn:hover{background:rgba(239,68,68,.1);}
+
+/* ─── Task 1: Server-side sync badge ─── */
+.serversync-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px;}
+.serversync-badge{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:10px;font-weight:700;}
+.serversync-badge.on{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3);}
+.serversync-badge.off{background:rgba(71,85,105,.15);color:var(--muted);border:1px solid var(--border);}
+.btn-serversync{padding:5px 12px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text2);font-family:'Syne',sans-serif;font-size:.74rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-serversync:hover{border-color:var(--green);color:var(--green);}
+.btn-serversync.revoke{border-color:rgba(239,68,68,.4);color:var(--red);}
+.btn-serversync.revoke:hover{background:rgba(239,68,68,.08);}
+body.light .serversync-badge.on{background:rgba(4,120,87,.12);border-color:rgba(4,120,87,.3);}
+body.light .serversync-badge.off{background:rgba(51,65,85,.08);}
+body.light .btn-serversync{border-color:#93c5fd;color:#1e3a5f;}
+body.light .btn-serversync:hover{border-color:#047857;color:#047857;}
+
+/* ─── Task 2: Shift count summary tfoot ─── */
+table.tt tfoot tr{border-top:2px solid var(--border2);}
+table.tt tfoot td{padding:3px 2px;text-align:center;vertical-align:middle;}
+table.tt tfoot td.tf-label{text-align:left;padding:4px 8px 4px 14px;font-size:.6rem;font-family:'JetBrains Mono',monospace;font-weight:700;white-space:nowrap;position:sticky;left:0;background:var(--s2);z-index:5;border-right:1px solid var(--border);letter-spacing:.05em;text-transform:uppercase;color:var(--text2);}
+.cnt-chip{display:inline-flex;align-items:center;justify-content:center;width:22px;height:18px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:700;}
+.cnt-zero{opacity:.15;}
+body.light table.tt tfoot td.tf-label{background:#dbeafe;color:#1e3a5f;}
+body.light table.tt tfoot tr{border-top-color:#93c5fd;}
+
+/* ─── Task 3: Employee row highlight ─── */
+table.tt tbody tr.emp-hl td               {background:rgba(245,158,11,.1) !important;}
+table.tt tbody tr.emp-hl td.td-name       {background:rgba(245,158,11,.22) !important;
+                                           color:var(--yellow) !important;
+                                           /* DO NOT change font-weight or padding — causes blowout */
+                                           overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+table.tt tbody tr.emp-hl .rc              {outline:2px solid var(--yellow);outline-offset:1px;transform:scale(1.05);position:relative;z-index:1;}
+body.light table.tt tbody tr.emp-hl td    {background:rgba(180,83,9,.08) !important;}
+body.light table.tt tbody tr.emp-hl td.td-name{background:rgba(180,83,9,.18) !important;
+                                              color:#92400e !important;
+                                              overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+body.light table.tt tbody tr.emp-hl .rc   {outline-color:#b45309;}
+
+/* ─── Task 4: Day column vertical highlight ─── */
+/* td/th in highlighted column get a vivid teal wash */
+table.tt thead th.col-hl        {background:rgba(0,212,255,.30) !important;
+                                  color:var(--accent) !important;
+                                  font-weight:800;outline:2px solid var(--accent);outline-offset:-1px;}
+table.tt thead tr.r-dow th.col-hl{background:rgba(0,212,255,.18) !important;
+                                   color:var(--accent) !important;font-weight:700;}
+table.tt tbody td.col-hl        {background:rgba(0,212,255,.12) !important;}
+table.tt tfoot td.col-hl        {background:rgba(0,212,255,.18) !important;}
+/* chips inside highlighted column get cyan outline — same pattern as row highlight */
+table.tt tbody td.col-hl .rc    {outline:2px solid var(--accent);outline-offset:1px;
+                                  transform:scale(1.05);position:relative;z-index:1;}
+/* header cursor + hover */
+table.tt thead tr.r-dates th:not(.th-name){cursor:pointer;}
+table.tt thead tr.r-dates th:not(.th-name):hover{background:rgba(0,212,255,.1);}
+/* Light mode overrides */
+body.light table.tt thead th.col-hl         {background:rgba(29,111,196,.30) !important;
+                                              color:#1d4ed8 !important;
+                                              outline-color:#1d4ed8;}
+body.light table.tt thead tr.r-dow th.col-hl{background:rgba(29,111,196,.15) !important;
+                                              color:#1d4ed8 !important;}
+body.light table.tt tbody td.col-hl         {background:rgba(29,111,196,.10) !important;}
+body.light table.tt tfoot td.col-hl         {background:rgba(29,111,196,.18) !important;}
+body.light table.tt tbody td.col-hl .rc     {outline-color:#2563eb;}
+body.light table.tt thead tr.r-dates th:not(.th-name):hover{background:rgba(29,111,196,.1);}
+
+/* ─── New Task 2: WO count sticky right column (admin panel only) ─── */
+.th-wo-count{position:sticky;right:0;background:var(--s2);z-index:15;
+             font-size:.65rem;font-family:'JetBrains Mono',monospace;font-weight:700;
+             color:var(--text2);text-align:center;padding:5px 8px;
+             border-left:2px solid var(--border2);min-width:36px;white-space:nowrap;}
+.td-wo-count{position:sticky;right:0;background:var(--card);z-index:4;
+             text-align:center;padding:3px 6px;border-left:2px solid var(--border);}
+.wo-count-badge{display:inline-flex;align-items:center;justify-content:center;
+                width:24px;height:20px;border-radius:5px;font-family:'JetBrains Mono',monospace;
+                font-size:.68rem;font-weight:800;
+                background:rgba(71,85,105,.25);color:var(--text2);}
+/* highlight if the row is highlighted */
+table.tt tbody tr.emp-hl .td-wo-count .wo-count-badge{background:rgba(245,158,11,.35);color:var(--yellow);}
+/* light mode */
+body.light .th-wo-count{background:#bfdbfe;color:#1e3a5f;border-left-color:#60a5fa;}
+body.light .td-wo-count{background:#eff6ff;border-left-color:#93c5fd;}
+body.light .wo-count-badge{background:#cbd5e1;color:#334155;}
+body.light table.tt tbody tr.emp-hl .td-wo-count .wo-count-badge{background:rgba(180,83,9,.3);color:#92400e;}
+body.light table.tt tbody tr:hover .td-wo-count{background:#dbeafe;}
+body.light table.tt tbody tr.me .td-wo-count{background:#bfdbfe;}
+
+/* ─── Responsive ─── */
+@media(max-width:600px){
+  .tab-btn{padding:10px 12px;font-size:.78rem;}
+  .tab-content{padding:16px;}
+  .app-header{padding:12px 16px;gap:8px;}
+  .hdr-title{font-size:.95rem;}
+  .sc{min-height:46px;}
+  .sc .tm{display:none;}
+  .rc{width:25px;height:20px;font-size:.56rem;}
+  .stat-row{grid-template-columns:repeat(3,1fr);}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN SCREEN ══════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <span class="login-logo">📅</span>
+    <h1>SOC Roster <span>Hub</span></h1>
+    <p class="sub">Your monthly duty roster, always in sync.<br>Sign in with your company Gmail to continue.</p>
+    <div class="org">itorizin · soc operations</div>
+    <button class="btn-signin" onclick="requestToken()">
+      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Sign in with Google
+    </button>
+    <p class="login-note">⚠️ Must be hosted on a web server — not opened as file://</p>
+  </div>
+</div>
+
+<!-- ══════════════ LOADING ══════════════ -->
+<div id="loading-screen">
+  <div class="spin"></div>
+  <p id="loading-msg">Loading your roster…</p>
+</div>
+
+<!-- ══════════════ MAIN APP ══════════════ -->
+<div id="main-app">
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="hdr-logo">📅</div>
+    <div>
+      <div class="hdr-title">SOC Roster Hub</div>
+      <div class="hdr-user">
+        <span id="hdr-email">—</span>
+        <span id="hdr-admin-badge" class="admin-badge" style="display:none">ADMIN</span>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <select class="month-sel" id="month-sel" onchange="onMonthChange(this.value)"></select>
+      <button class="btn-sm" id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">🌙</button>
+      <button class="btn-sm" onclick="signOut()">Sign Out</button>
+    </div>
+  </header>
+
+  <!-- Tab Nav -->
+  <div class="tab-nav">
+    <button class="tab-btn active" id="tbtn-my"   onclick="switchTab('my-shifts',this)">🗓️ My Shifts</button>
+    <button class="tab-btn"        id="tbtn-team" onclick="switchTab('team-roster',this)">👥 Team Roster</button>
+    <button class="tab-btn"        id="tbtn-admin" onclick="switchTab('admin-panel',this)" style="display:none">⚙️ Admin Panel <span class="badge" id="pending-badge" style="display:none">0</span></button>
+  </div>
+
+  <!-- ── Tab 1: My Shifts ── -->
+  <div class="tab-content active" id="tab-my-shifts">
+    <div id="my-shifts-content">
+      <div class="empty"><div class="empty-icon">🗓️</div><p>Loading your shifts…</p></div>
+    </div>
+  </div>
+
+  <!-- ── Tab 2: Team Roster ── -->
+  <div class="tab-content" id="tab-team-roster">
+    <div id="team-content">
+      <div class="empty"><div class="empty-icon">👥</div><p>Loading team roster…</p></div>
+    </div>
+  </div>
+
+  <!-- ── Tab 3: Admin Panel ── -->
+  <div class="tab-content" id="tab-admin-panel">
+    <div id="admin-content">
+      <div class="empty"><div class="empty-icon">⚙️</div><p>Loading admin panel…</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL ══════════════ -->
+<div id="modal-overlay" onclick="closeModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script src="https://accounts.google.com/gsi/client" async></script>
+<script>
+/* ══════════════════════════════════════════════════════
+   CONFIG
+══════════════════════════════════════════════════════ */
+const SHEET_ID       = '1MY9aFaaUdSmqUP2V3gXt0emNMONlubgOfVqoV2mLpoY';
+const APPS_SCRIPT_URL = 'https://soc-roster-proxy.navoneel-itorizin-87e.workers.dev';
+const CLIENT_ID   = '135332498104-1jlvua53i6ujahtov3enj1och1ln3o0o.apps.googleusercontent.com';
+const ADMIN_EMAIL = 'navoneel.itorizin@gmail.com';
+const SCOPES      = 'openid email profile https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/gmail.send';
+
+const MONTH_ORDER = ['January','February','March','April','May','June',
+                     'July','August','September','October','November','December'];
+const DOW_MARCH2026 = [0,1,2,3,4,5,6,0,1,2,3,4,5,6,0,1,2,3,4,5,6,0,1,2,3,4,5,6,0,1,2];
+const DOW_LABELS    = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+const SHIFT_META = {
+  'MS':     {bg:'rgba(59,130,246,.22)',   fg:'#93c5fd', label:'Morning Shift',       start:'07:00',end:'16:30',emoji:'🌅',allDay:false,nextDay:false},
+  'GS':     {bg:'rgba(16,185,129,.22)',   fg:'#6ee7b7', label:'General Shift',        start:'10:30',end:'20:00',emoji:'☀️',allDay:false,nextDay:false},
+  'AS':     {bg:'rgba(245,158,11,.22)',   fg:'#fcd34d', label:'Afternoon Shift',      start:'12:00',end:'21:30',emoji:'🌆',allDay:false,nextDay:false},
+  'NS':     {bg:'rgba(99,91,255,.22)',    fg:'#c4b5fd', label:'Night Shift',          start:'21:30',end:'07:00',emoji:'🌙',allDay:false,nextDay:true},
+  'WFH-MS': {bg:'rgba(6,182,212,.18)',    fg:'#67E8F9', label:'WFH – Morning',        start:'07:00',end:'16:30',emoji:'🏠',allDay:false,nextDay:false},
+  'WFH-GS': {bg:'rgba(6,182,212,.18)',    fg:'#67E8F9', label:'WFH – General',        start:'10:30',end:'20:00',emoji:'🏠',allDay:false,nextDay:false},
+  'WFH-AS': {bg:'rgba(6,182,212,.18)',    fg:'#67E8F9', label:'WFH – Afternoon',      start:'12:00',end:'21:30',emoji:'🏠',allDay:false,nextDay:false},
+  'WFH-NS': {bg:'rgba(6,182,212,.18)',    fg:'#67E8F9', label:'WFH – Night',          start:'21:30',end:'07:00',emoji:'🏠',allDay:false,nextDay:true},
+  'WO':     {bg:'rgba(71,85,105,.22)',    fg:'#94A3B8', label:'Week Off',             allDay:true},
+  'VL':     {bg:'rgba(244,63,94,.22)',    fg:'#fda4af', label:'Vacation Leave',       emoji:'🏖️',allDay:true},
+  'CL':     {bg:'rgba(185,28,28,.42)',    fg:'#fca5a5', label:'Casual Leave',         emoji:'📋',allDay:true},
+  'SL':     {bg:'rgba(194,65,12,.42)',    fg:'#fdba74', label:'Sick Leave',           emoji:'🤒',allDay:true},
+  'CO':     {bg:'rgba(234,179,8,.22)',    fg:'#fef08a', label:'Compensatory Off',     emoji:'🔄',allDay:true},
+  'GH':     {bg:'rgba(20,184,166,.22)',   fg:'#5eead4', label:'Gazetted Holiday',     emoji:'🎉',allDay:true},
+};
+const ALL_CODES   = Object.keys(SHIFT_META);
+const LEAVE_CODES = ['VL','CL','SL','CO','GH'];
+const OFF_CODES   = ['WO',...LEAVE_CODES];
+
+function shiftClass(code) {
+  if (!code) return 'sh-WO';
+  if (code.startsWith('WFH')) return 'sh-WFH';
+  return 'sh-' + (SHIFT_META[code] ? code : 'WO');
+}
+function bgClass(code) {
+  if (!code) return 'bg-WO';
+  if (code.startsWith('WFH')) return 'bg-WFH';
+  return 'bg-' + (SHIFT_META[code] ? code : 'WO');
+}
+// Safe version for inline use inside template literals (same logic)
+function shiftClassSafe(code) { return shiftClass(code); }
+
+/* ══════════════════════════════════════════════════════
+   EMAIL — Gmail API direct send
+   Uses the currently-logged-in user's OAuth token
+   (scope: gmail.send). Sends FROM the current user
+   TO any recipient. Silent fail — email is optional.
+══════════════════════════════════════════════════════ */
+async function sendEmailViaGmail(to, subject, bodyText) {
+  if (!to || !token) return;
+  try {
+    // Build RFC 2822 raw message, then base64url-encode it (Gmail API requirement)
+    const raw2822 = [
+      `To: ${to}`,
+      `Subject: ${subject}`,
+      'MIME-Version: 1.0',
+      'Content-Type: text/plain; charset=UTF-8',
+      '',
+      bodyText
+    ].join('\r\n');
+
+    // UTF-8 safe base64url (handles non-ASCII names, Devanagari etc.)
+    const encoder  = new TextEncoder();
+    const bytes    = encoder.encode(raw2822);
+    let   binary   = '';
+    bytes.forEach(b => { binary += String.fromCharCode(b); });
+    const raw = btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+
+    await apiFetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ raw })
+    });
+  } catch(e) {
+    // Silent — never let email errors break the main workflow
+    console.warn('[Email] Gmail send failed →', to, ':', e.message);
+  }
+}
+
+/* ── Get all admin emails from employeeMaster state ── */
+function getAdminEmailsList() {
+  return employeeMaster.filter(e => e.isAdmin && e.email).map(e => e.email);
+}
+
+/* ══════════════════════════════════════════════════════
+   ROSTER-IN-CALENDAR — build daily team roster text
+   Called per-day inside syncCalendarHeadless so the
+   team's shift grouping appears in every calendar event
+   description. Zero extra API calls — uses the rows
+   data already loaded by getRoster().
+
+   allRows  : full roster rows array from getRoster()
+   dayNum   : integer 1–31
+
+   Output format (matches the screenshot):
+     MS  –  Ariv, Bhaskar, Shreya
+     GS  –  Kranthi, Pritam, Anubrata
+     AS  –  Rameez, Prithwiraj
+     NS  –  Ritisha, Navoneel
+══════════════════════════════════════════════════════ */
+function buildDailyRosterText(allRows, dayNum) {
+  const ORDER  = ['MS','GS','AS','NS','WFH-MS','WFH-GS','WFH-AS','WFH-NS'];
+  const SKIP   = new Set(['WO','GH','VL','CL','SL','CO']); // off/leave — exclude from team view
+  const groups = {};
+
+  allRows
+    .filter(r => r[1]?.toString().trim())          // skip blank name rows
+    .forEach(row => {
+      const code = (row[dayNum + 1] || '').toString().trim().toUpperCase() || 'WO';
+      if (SKIP.has(code) || !ORDER.includes(code)) return;
+      // First name only for compactness (e.g. "Navoneel Das" → "Navoneel")
+      const firstName = row[1].trim().split(/\s+/)[0];
+      (groups[code] = groups[code] || []).push(firstName);
+    });
+
+  const lines = ORDER
+    .filter(k => groups[k]?.length)
+    .map(k => `${k.padEnd(6)}–  ${groups[k].join(', ')}`);
+
+  return lines.length ? lines.join('\n') : '(No scheduled staff today)';
+}
+
+/* ══════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════ */
+let tokenClient, token = null;
+let userEmail = null, userName = null, isAdmin = false;
+let availableMonths = [], selectedMonth = null;
+let employeeMaster = [];  // [{name, email, role, shiftGroup, isAdmin}]
+let rosterCache = {};     // month -> [[row data]]
+let leaveLogCache = null;
+let activeFilter = 'ALL', activeTab = 'my-shifts';
+let pendingCount = 0;
+let auditLog = [];
+let autoSyncPoller  = null;  // legacy – kept for stopAutoSyncPoller cleanup
+let uiRefreshPoller = null;  // 30-second poller: refreshes UI + auto-syncs calendar
+let isSyncing       = false; // mutex — prevents concurrent calendar syncs (duplicate events)
+let codeClient      = null;  // Task 1: GIS code client for offline auth code flow
+let selectedEmpRow  = null;  // Task 3: currently highlighted employee <tr>
+let selectedDayCol  = null;  // Task 4: currently highlighted day column (1-based)
+
+/* ══════════════════════════════════════════════════════
+   AUTH
+══════════════════════════════════════════════════════ */
+window.addEventListener('load', () => {
+  // Wait for GIS to load
+  const iv = setInterval(() => {
+    if (window.google?.accounts?.oauth2) {
+      clearInterval(iv);
+      tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: SCOPES,
+        callback: handleToken
+      });
+
+      // Task 1: code client for one-time offline access (gets refresh_token)
+      codeClient = google.accounts.oauth2.initCodeClient({
+        client_id: CLIENT_ID,
+        scope: 'openid email profile https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar',
+        ux_mode: 'popup',
+        callback: handleAuthCode
+      });
+
+      // Try to restore session from sessionStorage
+      const saved = sessionStorage.getItem('soc_session');
+      if (saved) {
+        try {
+          const sess = JSON.parse(saved);
+          const age  = Date.now() - sess.savedAt;
+          // Token valid for 1 hour (3600000ms) — restore if fresh
+          if (age < 3300000) {
+            token     = sess.token;
+            userEmail = sess.email;
+            userName  = sess.name;
+            isAdmin   = sess.isAdmin;
+            showLoading('Restoring session…');
+            initApp().catch(() => { sessionStorage.removeItem('soc_session'); hideLoading(); });
+            return;
+          }
+        } catch(e) { sessionStorage.removeItem('soc_session'); }
+      }
+    }
+  }, 100);
+});
+
+function requestToken() {
+  if (!tokenClient) { alert('Google API not loaded yet. Please wait a moment and try again.'); return; }
+  tokenClient.requestAccessToken({ prompt: 'consent' });
+}
+
+async function handleToken(resp) {
+  if (resp.error) { alert('Authentication failed: ' + resp.error); return; }
+  token = resp.access_token;
+  showLoading('Signing you in…');
+  try {
+    const info = await apiFetch('https://www.googleapis.com/oauth2/v3/userinfo');
+    userEmail = info.email;
+    userName  = info.name || info.email.split('@')[0];
+    isAdmin   = userEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+    // Also check Employee_Master for admin flag (supports multiple admins)
+    // This is re-checked after employeeMaster loads in initApp()
+    await initApp();
+    // Save session so page refresh doesn't require re-login
+    sessionStorage.setItem('soc_session', JSON.stringify({
+      token, email: userEmail, name: userName, isAdmin, savedAt: Date.now()
+    }));
+  } catch(e) {
+    hideLoading();
+    alert('Failed to load user info: ' + e.message);
+  }
+}
+
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  document.getElementById('theme-toggle').textContent = isLight ? '☀️' : '🌙';
+  localStorage.setItem('soc_theme', isLight ? 'light' : 'dark');
+}
+
+// Apply saved theme on load
+(function() {
+  const saved = localStorage.getItem('soc_theme');
+  if (saved === 'light') {
+    document.body.classList.add('light');
+    // Button will be updated when app loads
+  }
+})();
+
+function signOut() {
+  token = null; userEmail = null; userName = null; isAdmin = false;
+  rosterCache = {}; leaveLogCache = null;
+  sessionStorage.removeItem('soc_session');
+  stopUIRefreshPoller();
+  stopAutoSyncPoller();
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect();
+}
+
+/* ══════════════════════════════════════════════════════
+   API HELPERS
+══════════════════════════════════════════════════════ */
+async function apiFetch(url, opts = {}) {
+  const headers = { Authorization: `Bearer ${token}`, ...(opts.headers || {}) };
+  const resp = await fetch(url, { ...opts, headers });
+  if (resp.status === 401) { signOut(); throw new Error('Session expired'); }
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err.error?.message || `HTTP ${resp.status}`);
+  }
+  // 204 No Content or empty body (e.g. Google Calendar DELETE) — nothing to parse
+  if (resp.status === 204 || resp.headers.get('content-length') === '0') return null;
+  const ct = resp.headers.get('content-type') || '';
+  if (!ct.includes('application/json')) return null;
+  return resp.json();
+}
+
+async function sheetsRead(range) {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`;
+  const data = await apiFetch(url);
+  return data.values || [];
+}
+
+async function sheetsWrite(range, values) {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`;
+  return apiFetch(url, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ values })
+  });
+}
+
+async function sheetsAppend(sheetName, values) {
+  const range = encodeURIComponent(sheetName + '!A1');
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`;
+  try {
+    return await apiFetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ range: sheetName + '!A1', majorDimension: 'ROWS', values })
+    });
+  } catch(e) {
+    console.error('sheetsAppend error:', e);
+    throw new Error('Write failed: ' + e.message + '. Try signing out and back in.');
+  }
+}
+
+// ── Cloudflare Worker proxy caller ──
+async function callAppsScript(payload) {
+  const resp = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...payload, token: token })
+  });
+  if (!resp.ok) throw new Error('Worker HTTP ' + resp.status);
+  const data = await resp.json();
+  if (!data.ok) throw new Error(data.error || 'Worker error');
+  return data;
+}
+
+/* ══════════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════════ */
+async function initApp() {
+  showLoading('Loading roster data…');
+
+  // Get available month sheets
+  const meta = await apiFetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}?fields=sheets.properties.title`);
+  availableMonths = meta.sheets
+    .map(s => s.properties.title)
+    .filter(t => MONTH_ORDER.some(m => t === m + '_' + t.split('_')[1] && /^\d{4}$/.test(t.split('_')[1])))
+    .sort((a, b) => {
+      const [ma, ya] = a.split('_'), [mb, yb] = b.split('_');
+      return ya !== yb ? +ya - +yb : MONTH_ORDER.indexOf(ma) - MONTH_ORDER.indexOf(mb);
+    });
+
+  // Default to most recent month
+  selectedMonth = availableMonths[availableMonths.length - 1] || 'March_2026';
+
+  // Populate month selector
+  const sel = document.getElementById('month-sel');
+  sel.innerHTML = availableMonths.map(m =>
+    `<option value="${m}" ${m === selectedMonth ? 'selected' : ''}>${m.replace('_',' ')}</option>`
+  ).join('');
+
+  // Load Employee_Master
+  showLoading('Loading employee data…');
+  const empRows = await sheetsRead('Employee_Master!A3:F25');
+  employeeMaster = empRows
+    .filter(r => r[1])
+    .map(r => ({
+      slNo: r[0], name: r[1]?.trim(), role: r[2],
+      email: r[3]?.trim().toLowerCase(), shiftGroup: r[4], isAdmin: r[5] === 'Yes'
+    }));
+
+  // Re-check admin from Employee_Master (supports multiple admins beyond ADMIN_EMAIL)
+  const empRecord = employeeMaster.find(e => e.email === userEmail.toLowerCase());
+  if (empRecord && empRecord.isAdmin) isAdmin = true;
+
+  // Update header
+  document.getElementById('hdr-email').textContent = userName + ' · ' + userEmail;
+  // Sync theme button icon
+  const themeBtn = document.getElementById('theme-toggle');
+  if (themeBtn) themeBtn.textContent = document.body.classList.contains('light') ? '☀️' : '🌙';
+  if (isAdmin) document.getElementById('hdr-admin-badge').style.display = 'inline';
+
+  // Show admin tab if admin
+  if (isAdmin) document.getElementById('tbtn-admin').style.display = 'flex';
+
+  // Show app
+  hideLoading();
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'block';
+
+  // Load first tab
+  await loadMyShifts();
+  if (isAdmin) checkPendingRequests();
+
+  // Task 1: check if server-side sync is already enabled for this user
+  checkServerSyncStatus();
+
+  // ── Start the unified 30-second poller (always on while logged in) ─────────
+  // Handles both: (1) auto-refresh UI when admin makes a change,
+  // (2) auto-sync calendar when auto-sync pref is ON.
+  startUIRefreshPoller();
+}
+
+/* ══════════════════════════════════════════════════════
+   UTILITIES
+══════════════════════════════════════════════════════ */
+function colLetter(n) {
+  let s = '';
+  while (n > 0) { n--; s = String.fromCharCode(65 + n % 26) + s; n = Math.floor(n / 26); }
+  return s;
+}
+
+function monthToYM(sheetName) {
+  const [m, y] = sheetName.split('_');
+  return `${y}-${String(MONTH_ORDER.indexOf(m) + 1).padStart(2,'0')}`;
+}
+
+function getDaysInMonth(sheetName) {
+  const [m, y] = sheetName.split('_');
+  return new Date(+y, MONTH_ORDER.indexOf(m) + 1, 0).getDate();
+}
+
+function getDOWForMonth(sheetName) {
+  const [m, y] = sheetName.split('_');
+  const firstDay = new Date(+y, MONTH_ORDER.indexOf(m), 1).getDay();
+  const days = getDaysInMonth(sheetName);
+  return Array.from({length: days}, (_, i) => (firstDay + i) % 7);
+}
+
+function getTodayDay(sheetName) {
+  const today = new Date();
+  const [m, y] = sheetName.split('_');
+  if (today.getFullYear() === +y && today.getMonth() === MONTH_ORDER.indexOf(m))
+    return today.getDate();
+  return -1;
+}
+
+async function getRoster(month) {
+  if (rosterCache[month]) return rosterCache[month];
+  const days = getDaysInMonth(month);
+  const lastCol = colLetter(days + 2);
+  const rows = await sheetsRead(`${month}!A4:${lastCol}22`);
+  rosterCache[month] = rows;
+  return rows;
+}
+
+function parseRosterRow(row) {
+  // row[0]=SlNo, row[1]=Name, row[2]=Day1 ... row[32]=Day31
+  const shifts = {};
+  for (let d = 1; d <= 31; d++) {
+    const val = (row[d + 1] || '').toString().trim().toUpperCase();
+    shifts[String(d).padStart(2,'0')] = val || 'WO';
+  }
+  return shifts;
+}
+
+function findMyRow(rows) {
+  // Primary: match by email (col D in Employee_Master maps to roster)
+  // First try email match via employeeMaster lookup
+  if (userEmail) {
+    const empRecord = employeeMaster.find(e => e.email === userEmail.toLowerCase());
+    if (empRecord) {
+      const idx = rows.findIndex(r => r[1]?.trim().toLowerCase() === empRecord.name.toLowerCase());
+      if (idx !== -1) return idx;
+    }
+  }
+  // Fallback: match by display name
+  if (!userName) return -1;
+  return rows.findIndex(r => r[1]?.trim().toLowerCase() === userName.toLowerCase());
+}
+
+function showLoading(msg = 'Loading…') {
+  document.getElementById('loading-msg').textContent = msg;
+  document.getElementById('loading-screen').style.display = 'flex';
+}
+function hideLoading() {
+  document.getElementById('loading-screen').style.display = 'none';
+}
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  activeTab = id;
+  selectedEmpRow = null; // Task 3: clear highlight on tab switch
+  selectedDayCol = null; // Task 4: clear column highlight on tab switch
+
+  if (id === 'my-shifts')    loadMyShifts();
+  if (id === 'team-roster')  loadTeamRoster();
+  if (id === 'admin-panel')  loadAdminPanel();
+}
+
+async function onMonthChange(month) {
+  selectedMonth  = month;
+  selectedEmpRow = null; // Task 3: clear highlight on month change
+  selectedDayCol = null; // Task 4: clear column highlight on month change
+  rosterCache    = {};   // clear cache so fresh data loads
+  if (activeTab === 'my-shifts')   await loadMyShifts();
+  if (activeTab === 'team-roster') await loadTeamRoster();
+  if (activeTab === 'admin-panel') await loadAdminPanel();
+}
+
+/* ══════════════════════════════════════════════════════
+   TAB 1 — MY SHIFTS
+══════════════════════════════════════════════════════ */
+async function loadMyShifts() {
+  const el = document.getElementById('my-shifts-content');
+  el.innerHTML = `<div class="empty"><div class="spin" style="margin:auto"></div></div>`;
+
+  try {
+    const rows   = await getRoster(selectedMonth);
+    const myIdx  = findMyRow(rows);
+    const days   = getDaysInMonth(selectedMonth);
+    const dow    = getDOWForMonth(selectedMonth);
+    const todayD = getTodayDay(selectedMonth);
+
+    if (myIdx === -1) {
+      el.innerHTML = `<div class="warn-box" style="display:block">⚠️ Your name was not found in the roster for ${selectedMonth.replace('_',' ')}. Contact your admin.</div>`;
+      return;
+    }
+
+    const myRow    = rows[myIdx];
+    const myShifts = parseRosterRow(myRow);
+    const empName  = myRow[1] || userName;
+
+    // Stats
+    const cnt = {};
+    ALL_CODES.forEach(c => cnt[c] = 0);
+    Object.values(myShifts).forEach(c => { if (cnt[c] !== undefined) cnt[c]++; });
+    const workDays = days - (cnt['WO'] || 0);
+
+    let html = `
+    <div class="sec-hdr">
+      <div><h2>🗓️ ${selectedMonth.replace('_',' ')} — ${empName}</h2>
+      <p>${workDays} working days · ${cnt['WO']||0} days off</p></div>
+      <div>
+        <div class="cal-controls">
+          <button class="btn btn-primary" id="sync-cal-btn" onclick="syncCalendar()">📅 Sync to SOC Calendar</button>
+          <div class="toggle-wrap">
+            <label class="toggle">
+              <input type="checkbox" id="autosync-toggle" onchange="toggleAutoSync(this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+            <span id="autosync-label" style="color:var(--muted)">Auto-sync: OFF</span>
+          </div>
+          <button class="desync-btn" onclick="openDesyncModal()">🗑️ De-sync</button>
+        </div>
+        <div class="serversync-row">
+          <span id="serversync-badge" class="serversync-badge off">⚡ Background Sync: OFF</span>
+          <button id="serversync-btn" class="btn-serversync" onclick="enableServerSync()">Enable Background Sync</button>
+          <span style="font-size:.68rem;color:var(--muted);font-family:'JetBrains Mono',monospace">Calendar syncs even when you're offline</span>
+        </div>
+        <div class="cal-info" id="last-sync-info"></div>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-box"><div class="n" style="color:#93c5fd">${cnt['MS']||0}</div><div class="l">Morning</div></div>
+      <div class="stat-box"><div class="n" style="color:#6ee7b7">${cnt['GS']||0}</div><div class="l">General</div></div>
+      <div class="stat-box"><div class="n" style="color:#fcd34d">${cnt['AS']||0}</div><div class="l">Afternoon</div></div>
+      <div class="stat-box"><div class="n" style="color:#c4b5fd">${cnt['NS']||0}</div><div class="l">Night</div></div>
+      <div class="stat-box"><div class="n" style="color:#67E8F9">${(cnt['WFH-MS']||0)+(cnt['WFH-GS']||0)+(cnt['WFH-AS']||0)+(cnt['WFH-NS']||0)}</div><div class="l">WFH</div></div>
+      <div class="stat-box"><div class="n" style="color:#fda4af">${LEAVE_CODES.reduce((s,c)=>s+(cnt[c]||0),0)}</div><div class="l">Leaves</div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="shift-legend">
+        <div class="leg"><div class="leg-dot" style="background:#93c5fd"></div>MS</div>
+        <div class="leg"><div class="leg-dot" style="background:#6ee7b7"></div>GS</div>
+        <div class="leg"><div class="leg-dot" style="background:#fcd34d"></div>AS</div>
+        <div class="leg"><div class="leg-dot" style="background:#c4b5fd"></div>NS</div>
+        <div class="leg"><div class="leg-dot" style="background:#67E8F9"></div>WFH</div>
+        <div class="leg"><div class="leg-dot" style="background:#94A3B8"></div>WO</div>
+        <div class="leg"><div class="leg-dot" style="background:#fda4af"></div>VL</div>
+        <div class="leg"><div class="leg-dot" style="background:#fca5a5"></div>CL</div>
+        <div class="leg"><div class="leg-dot" style="background:#fdba74"></div>SL</div>
+        <div class="leg"><div class="leg-dot" style="background:#fef08a"></div>CO</div>
+        <div class="leg"><div class="leg-dot" style="background:#5eead4"></div>GH</div>
+      </div>
+
+      <div class="sg-wrap"><div class="sg" id="my-sg">`;
+
+    DOW_LABELS.forEach(d => { html += `<div class="dh">${d}</div>`; });
+
+    // Padding before day 1
+    const startDow = dow[0];
+    for (let i = 0; i < startDow; i++) html += `<div></div>`;
+
+    for (let d = 1; d <= days; d++) {
+      const key  = String(d).padStart(2,'0');
+      const code = myShifts[key] || 'WO';
+      const meta = SHIFT_META[code.startsWith('WFH') ? code : code] || SHIFT_META['WO'];
+      const isToday = d === todayD;
+      const timeStr = (!OFF_CODES.includes(code) && meta?.start) ? `${meta.start}–${meta.end}` : '';
+
+      html += `<div class="sc ${bgClass(code)} ${isToday ? 'today-cell' : ''}"
+        onclick="openLeaveModal('${key}','${code}','${empName}','${myIdx}')">
+        <span class="dn" style="color:${isToday ? 'var(--accent)' : ''}">${d}</span>
+        <span class="code" style="color:${meta?.fg || '#94A3B8'}">${code}</span>
+        ${timeStr ? `<span class="tm">${timeStr}</span>` : ''}
+      </div>`;
+    }
+
+    html += `</div></div></div>
+
+    <div id="sync-progress" style="display:none" class="card">
+      <p style="font-size:.82rem;margin-bottom:8px" id="sync-txt">Creating events…</p>
+      <div class="prog-wrap">
+        <div class="prog-lbl"><span id="prog-l">0/0</span><span id="prog-r">0%</span></div>
+        <div class="prog-bar"><div class="prog-fill" id="prog-f"></div></div>
+      </div>
+    </div>
+    <div id="sync-result"></div>`;
+
+    el.innerHTML = html;
+    // Load auto-sync preference state
+    setTimeout(loadAutoSyncPref, 0);
+  } catch(e) {
+    el.innerHTML = `<div class="err-box" style="display:block">❌ Failed to load shifts: ${e.message}</div>`;
+  }
+}
+
+/* ── Leave / Swap Request Modal ── */
+function openLeaveModal(dayKey, currentCode, empName, empRowIdx) {
+  const dayNum = parseInt(dayKey);
+  const [m, y] = selectedMonth.split('_');
+  const dateStr = `${dayKey}-${String(MONTH_ORDER.indexOf(m)+1).padStart(2,'0')}-${y}`;
+
+  document.getElementById('modal-content').innerHTML = `
+    <h3>📝 Request Change — ${m} ${dayNum}, ${y}</h3>
+    <p style="font-size:.78rem;color:var(--text2);margin-bottom:16px">
+      Current shift: <strong style="color:${SHIFT_META[currentCode]?.fg||'#94A3B8'}">${currentCode}</strong>
+      — ${SHIFT_META[currentCode]?.label || 'Week Off'}
+    </p>
+    <div class="modal-field">
+      <label>Request Type</label>
+      <select id="req-type" onchange="toggleSwapFields()">
+        <option value="Leave Request">Leave Request</option>
+        <option value="Shift Swap">Shift Swap</option>
+        <option value="WFH Request">WFH Request</option>
+        <option value="Comp Off Request">Comp Off Request</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Leave / New Shift Code</label>
+      <select id="req-new-code">
+        ${ALL_CODES.filter(c=>c!=='WO').map(c=>`<option value="${c}" ${c===currentCode?'selected':''}>${c} — ${SHIFT_META[c]?.label||c}</option>`).join('')}
+      </select>
+    </div>
+    <div id="swap-fields" style="display:none">
+      <div class="modal-field">
+        <label>Swap With (colleague name)</label>
+        <select id="req-swap-partner">
+          ${employeeMaster.filter(e=>e.name!==empName).map(e=>`<option value="${e.name}">${e.name}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="modal-field">
+      <label>Notes / Reason</label>
+      <textarea id="req-notes" placeholder="Optional reason…"></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitLeaveRequest('${dayKey}','${currentCode}','${empName}','${dateStr}')">Submit Request</button>
+    </div>`;
+
+  openModal();
+}
+
+function toggleSwapFields() {
+  const isSwap = document.getElementById('req-type').value === 'Shift Swap';
+  document.getElementById('swap-fields').style.display = isSwap ? 'block' : 'none';
+}
+
+async function submitLeaveRequest(dayKey, currentCode, empName, dateStr) {
+  const type    = document.getElementById('req-type').value;
+  const newCode = document.getElementById('req-new-code').value;
+  const partner = document.getElementById('req-swap-partner')?.value || '—';
+  const notes   = document.getElementById('req-notes').value;
+
+  try {
+    await callAppsScript({
+      action:        'submitRequest',
+      month:         selectedMonth.replace('_', ' '),
+      empName:       empName,
+      reqType:       type,
+      dateAffected:  dateStr,
+      originalShift: currentCode,
+      newShift:      newCode,
+      swapPartner:   type === 'Shift Swap' ? partner : '—',
+      notes:         notes
+    });
+    closeModal();
+    showToast('✅ Request submitted — pending admin approval');
+    leaveLogCache = null;
+    if (isAdmin) checkPendingRequests();
+
+    // ── Email notifications via Gmail API (uses current user's token) ─────────
+    // 1. Confirmation to the employee who submitted
+    const [m, y] = selectedMonth.split('_');
+    const confirmSubject = `[SOC Roster] Your ${type} has been received`;
+    const confirmBody =
+      `Hi ${empName},\n\n` +
+      `Your ${type} has been received and is pending admin approval.\n\n` +
+      `Date   : ${dateStr}\n` +
+      `Change : ${currentCode} → ${newCode}\n` +
+      (type === 'Shift Swap' ? `Swap   : ${partner}\n` : '') +
+      `Month  : ${m} ${y}\n\n` +
+      `You will receive another email once the admin reviews your request.\n\n— SOC Roster Hub`;
+    sendEmailViaGmail(userEmail, confirmSubject, confirmBody);
+
+    // 2. Notification to all admins
+    const adminSubject = `[SOC Roster] New ${type} — ${empName}`;
+    const adminBody =
+      `A new request has been submitted.\n\n` +
+      `Employee : ${empName}\n` +
+      `Type     : ${type}\n` +
+      `Date     : ${dateStr}\n` +
+      `Change   : ${currentCode} → ${newCode}\n` +
+      (type === 'Shift Swap' ? `Swap     : ${partner}\n` : '') +
+      `Month    : ${m} ${y}\n\n` +
+      `Please review this request in the SOC Roster Hub Admin Panel.`;
+    getAdminEmailsList().forEach(adminEmail => {
+      if (adminEmail !== userEmail) sendEmailViaGmail(adminEmail, adminSubject, adminBody);
+    });
+    // ─────────────────────────────────────────────────────────────────────────
+  } catch(e) {
+    alert('Failed to submit request: ' + e.message);
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   GOOGLE CALENDAR SYNC
+══════════════════════════════════════════════════════ */
+/* ── Option B: Dedicated SOC Roster Calendar ────────────────
+   Finds or creates a "SOC Roster" calendar.
+   Deletes ALL events in it for the selected month.
+   Recreates them fresh → zero duplicates possible.
+─────────────────────────────────────────────────────────── */
+
+const SOC_CAL_NAME = 'SOC Roster';
+
+async function getOrCreateSocCalendar() {
+  // Check localStorage cache first
+  const cached = localStorage.getItem('soc_calendar_id_' + userEmail);
+  if (cached) {
+    // Verify it still exists
+    try {
+      await apiFetch(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(cached)}`);
+      return cached;
+    } catch(e) {
+      localStorage.removeItem('soc_calendar_id_' + userEmail);
+    }
+  }
+
+  // List all calendars and find "SOC Roster"
+  const list = await apiFetch('https://www.googleapis.com/calendar/v3/users/me/calendarList');
+  const existing = (list.items || []).find(c => c.summary === SOC_CAL_NAME);
+  if (existing) {
+    localStorage.setItem('soc_calendar_id_' + userEmail, existing.id);
+    return existing.id;
+  }
+
+  // Create new "SOC Roster" calendar
+  const created = await apiFetch('https://www.googleapis.com/calendar/v3/calendars', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      summary: SOC_CAL_NAME,
+      description: 'SOC duty roster shifts — auto-synced from SOC Roster Hub',
+      timeZone: 'Asia/Kolkata'
+    })
+  });
+
+  // Set a distinct color for the calendar (teal)
+  await apiFetch(`https://www.googleapis.com/calendar/v3/users/me/calendarList/${encodeURIComponent(created.id)}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: created.id, colorId: '7' })
+  }).catch(() => {});
+
+  localStorage.setItem('soc_calendar_id_' + userEmail, created.id);
+  return created.id;
+}
+
+async function deleteAllEventsInMonth(calendarId, ym) {
+  const [year, mo] = ym.split('-').map(Number);
+  // Extend tMin 6 hours before month start to catch IST-offset events
+  // (IST = UTC+5:30, so midnight IST = 18:30 UTC previous day)
+  const prevDay  = new Date(Date.UTC(year, mo - 1, 1) - 6 * 3600000);
+  const tMin     = prevDay.toISOString();
+  const nextMonthYear = mo < 12 ? year : year + 1;
+  const nextMonthMo   = mo < 12 ? mo + 1 : 1;
+  const tMax = `${nextMonthYear}-${String(nextMonthMo).padStart(2,'0')}-01T00:00:00Z`;
+
+  let pageToken = null;
+  let deleted   = 0;
+  do {
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?` +
+      `timeMin=${tMin}&timeMax=${tMax}&maxResults=250&singleEvents=true` +
+      (pageToken ? `&pageToken=${pageToken}` : '');
+    const data = await apiFetch(url);
+    for (const ev of (data.items || [])) {
+      await apiFetch(
+        `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events/${ev.id}`,
+        { method: 'DELETE' }
+      );
+      deleted++;
+    }
+    pageToken = data.nextPageToken || null;
+  } while (pageToken);
+
+  return deleted;
+}
+
+/* ── syncCalendarHeadless — zero DOM dependencies ────────────────────────────
+   Core sync logic extracted so it can be called from the background poller
+   without depending on the My Shifts tab being active in the DOM.
+   onProgress(done, total, msg) is optional — called after each event created.
+──────────────────────────────────────────────────────────────────────────── */
+async function syncCalendarHeadless(onProgress) {
+  // ── Mutex: only one sync can run at a time ──────────────────────────────────
+  if (isSyncing) {
+    console.log('[Sync] Already running — skipping concurrent call');
+    return null;
+  }
+  isSyncing = true;
+  // NOTE: do NOT pre-stamp soc_last_sync_ here — if sync fails, the pre-stamp
+  // would make the poller think everything is up to date and never retry.
+  // The stamp happens only on SUCCESS at the end of this function.
+
+  try {
+  const rows   = await getRoster(selectedMonth);
+  const myIdx  = findMyRow(rows);
+  if (myIdx === -1) throw new Error('Your row not found in roster');
+
+  const myShifts   = parseRosterRow(rows[myIdx]);
+  const ym         = monthToYM(selectedMonth);
+  const [year, mo] = ym.split('-').map(Number);
+  const days       = getDaysInMonth(selectedMonth);
+
+  const calendarId = await getOrCreateSocCalendar();
+  await deleteAllEventsInMonth(calendarId, ym);
+
+  // Iterate ALL days: working shifts + WO + leaves.
+  // IMPORTANT: GH (Gazetted Holiday) is SKIPPED because these already appear
+  // in the user's subscribed India holidays calendar — creating them again
+  // would show every national holiday TWICE in Google Calendar.
+  //
+  // CRITICAL: parseRosterRow() always generates keys "01"–"31" regardless of
+  // the actual month length (hardcoded loop). For months shorter than 31 days
+  // (April=30, June=30, Sep=30, Nov=30, Feb=28/29), the extra entries produce
+  // invalid dates like "2026-04-31" which Google Calendar rejects with 400 Bad
+  // Request — causing the sync to fail at the very end of every run. Filter to
+  // only the real days in the month to prevent this.
+  const allDays = Object.entries(myShifts).filter(([key]) => parseInt(key) <= days);
+  const total   = allDays.length;
+  let done = 0;
+
+  // Helper: next calendar date string (all-day events need exclusive end date)
+  function nextDate(ymStr, keyStr) {
+    const d = new Date(ymStr + '-' + keyStr + 'T00:00:00');
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().slice(0, 10);
+  }
+
+  for (const [key, code] of allDays) {
+    const d    = parseInt(key);
+    const meta = SHIFT_META[code] || SHIFT_META['WO'];
+
+    // Build today's team roster text — zero extra API calls, uses already-loaded rows
+    const rosterText = buildDailyRosterText(rows, d);
+
+    let eventBody;
+
+    if (code === 'GH') {
+      // Skip: Gazetted Holidays already appear from Google's India holidays calendar
+      done++; continue;
+    } else if (code === 'WO') {
+      // All-day Week Off — end must be start + 1 day (Google Calendar requirement)
+      eventBody = {
+        summary:     '🔴 Week Off',
+        description: `Week Off — no shift today\n\nToday's team:\n${rosterText}`,
+        start:       { date: `${ym}-${key}` },
+        end:         { date: nextDate(ym, key) },
+        colorId:     '8',
+        reminders:   { useDefault: false }
+      };
+    } else if (LEAVE_CODES.includes(code)) {
+      // All-day leave — end must be start + 1 day
+      const leaveColorMap = { 'VL':'11', 'CL':'11', 'SL':'11', 'CO':'5' };
+      eventBody = {
+        summary:     `${meta.emoji || '📋'} ${meta.label}`,
+        description: `${meta.label} — SOC Roster\n\nToday's team:\n${rosterText}`,
+        start:       { date: `${ym}-${key}` },
+        end:         { date: nextDate(ym, key) },
+        colorId:     leaveColorMap[code] || '11',
+        reminders:   { useDefault: false }
+      };
+    } else if (!meta.allDay && meta.start) {
+      // Timed working shift — 2-hour reminder
+      const dateStr = `${ym}-${key}`;
+      const startDT = `${dateStr}T${meta.start}:00+05:30`;
+      let endDT;
+      if (meta.nextDay) {
+        const nd    = new Date(year, mo - 1, d + 1);
+        const ndStr = `${nd.getFullYear()}-${String(nd.getMonth()+1).padStart(2,'0')}-${String(nd.getDate()).padStart(2,'0')}`;
+        endDT = `${ndStr}T${meta.end}:00+05:30`;
+      } else {
+        endDT = `${dateStr}T${meta.end}:00+05:30`;
+      }
+      const colorId = code==='MS'?'7':code==='GS'?'2':code==='AS'?'5':
+                      code.startsWith('NS')?'3':code.startsWith('WFH')?'10':'9';
+      eventBody = {
+        summary:     `${meta.emoji} ${meta.label}`,
+        description: `${meta.start} – ${meta.end} IST\n\nToday's team:\n${rosterText}`,
+        start:       { dateTime: startDT, timeZone: 'Asia/Kolkata' },
+        end:         { dateTime: endDT,   timeZone: 'Asia/Kolkata' },
+        colorId,
+        reminders:   { useDefault: false, overrides: [{ method: 'popup', minutes: 120 }] }
+      };
+    } else {
+      done++; continue;
+    }
+
+    await apiFetch(
+      `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(eventBody) }
+    );
+    done++;
+    if (onProgress) onProgress(done, total, `Creating event ${done} of ${total}…`);
+    await new Promise(r => setTimeout(r, 50));
+  }
+
+  localStorage.setItem('soc_last_sync_' + userEmail, new Date().toISOString());
+  return { synced: done, total, totalDays: days };
+
+  } finally {
+    isSyncing = false; // always release mutex even on error
+  }
+}
+
+/* ── syncCalendar — UI-facing wrapper around syncCalendarHeadless ─────────── */
+async function syncCalendar() {
+  const btn        = document.getElementById('sync-cal-btn');
+  const progressEl = document.getElementById('sync-progress');
+  const resultEl   = document.getElementById('sync-result');
+  const txtEl      = document.getElementById('sync-txt');
+
+  if (btn)        { btn.disabled = true; btn.textContent = '⏳ Syncing…'; }
+  if (progressEl) progressEl.style.display = 'block';
+  if (resultEl)   resultEl.innerHTML = '';
+  if (txtEl)      txtEl.textContent = 'Finding SOC Roster calendar…';
+
+  try {
+    const days  = getDaysInMonth(selectedMonth);
+    const stats = await syncCalendarHeadless((done, total, msg) => {
+      const pct = Math.round(done / total * 100);
+      const pf  = document.getElementById('prog-f');
+      const pl  = document.getElementById('prog-l');
+      const pr  = document.getElementById('prog-r');
+      const st  = document.getElementById('sync-txt');
+      if (pf) pf.style.width = pct + '%';
+      if (pl) pl.textContent = `${done}/${total}`;
+      if (pr) pr.textContent = pct + '%';
+      if (st) st.textContent = msg;
+    });
+
+    updateLastSyncLabel();
+    if (progressEl) progressEl.style.display = 'none';
+    if (resultEl) resultEl.innerHTML = `
+      <div class="sync-done">
+        <div style="font-size:2rem;margin-bottom:8px">🎉</div>
+        <h3>All Shifts Synced!</h3>
+        <p>${selectedMonth.replace('_',' ')} shifts are now in your <strong>SOC Roster</strong> calendar.</p>
+        <div class="sync-stats">
+          <div class="stat-box"><div class="n" style="color:var(--green)">${stats.synced}</div><div class="l">Synced</div></div>
+          <div class="stat-box"><div class="n" style="color:var(--text2)">${days - stats.total}</div><div class="l">Days Off</div></div>
+          <div class="stat-box"><div class="n" style="color:var(--accent)">${days}</div><div class="l">Total Days</div></div>
+        </div>
+      </div>`;
+    if (btn) {
+      btn.textContent = '✅ Synced!';
+      btn.style.background = 'linear-gradient(135deg,var(--green),#059669)';
+      btn.style.color = 'white';
+    }
+  } catch(e) {
+    if (progressEl) progressEl.style.display = 'none';
+    if (resultEl)   resultEl.innerHTML = `<div class="err-box" style="display:block">❌ Sync failed: ${e.message}</div>`;
+    if (btn) { btn.disabled = false; btn.textContent = '📅 Sync to SOC Calendar'; }
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   TAB 2 — TEAM ROSTER
+══════════════════════════════════════════════════════ */
+async function loadTeamRoster() {
+  const el = document.getElementById('team-content');
+  el.innerHTML = `<div class="empty"><div class="spin" style="margin:auto"></div></div>`;
+
+  try {
+    const rows   = await getRoster(selectedMonth);
+    const days   = getDaysInMonth(selectedMonth);
+    const dow    = getDOWForMonth(selectedMonth);
+    const todayD = getTodayDay(selectedMonth);
+    renderTeamTable(el, rows, days, dow, todayD, false);
+  } catch(e) {
+    el.innerHTML = `<div class="err-box" style="display:block">❌ ${e.message}</div>`;
+  }
+}
+
+function renderTeamTable(el, rows, days, dow, todayD, editable) {
+  // ── Task 1 fix: filter out any sheet row where column B (Name) is blank ──
+  // Row 4 in the sheet is a day-label header row with no employee name.
+  const empRows = rows.filter(r => r[1]?.toString().trim());
+  if (!empRows.length) { el.innerHTML = `<div class="empty"><div class="empty-icon">👥</div><p>No roster data found for this month.</p></div>`; return; }
+
+  // Count totals per shift type
+  const totals = {};
+  empRows.forEach(row => {
+    for (let d=1;d<=days;d++) {
+      const code = (row[d+1]||'WO').trim().toUpperCase();
+      const base = code.startsWith('WFH') ? 'WFH' : code;
+      totals[base] = (totals[base] || 0) + 1;
+    }
+  });
+
+  let html = `
+  <div class="sec-hdr">
+    <div><h2>👥 ${selectedMonth.replace('_',' ')} — Team Roster</h2>
+    <p>${empRows.length} employees</p></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap"><span class="search-icon">🔍</span>
+      <input type="text" id="team-search" placeholder="Search employee…" oninput="filterTeam()">
+    </div>
+    <div class="fbtns">
+      <button class="fbtn on" data-f="ALL" onclick="setTeamFilter('ALL',this)">ALL</button>
+      <button class="fbtn f-MS" data-f="MS" onclick="setTeamFilter('MS',this)">MS</button>
+      <button class="fbtn f-GS" data-f="GS" onclick="setTeamFilter('GS',this)">GS</button>
+      <button class="fbtn f-AS" data-f="AS" onclick="setTeamFilter('AS',this)">AS</button>
+      <button class="fbtn f-NS" data-f="NS" onclick="setTeamFilter('NS',this)">NS</button>
+      <button class="fbtn f-WFH" data-f="WFH" onclick="setTeamFilter('WFH',this)">WFH</button>
+    </div>
+  </div>
+
+  <div class="ttable-wrap">
+  <table class="tt" id="team-tt">
+    <thead>
+      <tr class="r-dates">
+        <th class="th-name">Employee</th>`;
+
+  for (let d=1;d<=days;d++) {
+    const isWk = dow[d-1]===0||dow[d-1]===6;
+    const isTd = d===todayD;
+    html += `<th class="${isWk?'wk':''}" data-col="${d}" onclick="toggleDayHighlight(${d},this)" style="${isTd?'outline:1px solid var(--accent);':''};cursor:pointer" title="Click to highlight column">${d}</th>`;
+  }
+  // WO count header — only show in admin panel (editable=true)
+  if (editable) html += `<th class="th-wo-count" title="Total Week Offs this month">WO</th>`;
+
+  html += `</tr><tr class="r-dow"><th class="th-name"></th>`;
+  for (let d=1;d<=days;d++) {
+    const isWk = dow[d-1]===0||dow[d-1]===6;
+    html += `<th class="${isWk?'wk':''}">${DOW_LABELS[dow[d-1]].slice(0,2)}</th>`;
+  }
+  if (editable) html += `<th class="th-wo-count"></th>`;
+  html += `</tr></thead><tbody>`;
+
+  empRows.forEach((row, ri) => {
+    const empName = row[1]?.trim() || '';
+    const isMe    = empName.toLowerCase() === userName?.toLowerCase();
+    // FIX BUG 1: use the row's actual position in the UNFILTERED rows array.
+    // ri is the index in empRows (after blank-row filtering), but the Worker
+    // needs the unfiltered index so it can compute the correct sheet row number.
+    // Without this fix, admin edits write to the wrong row (off by 1+ rows).
+    const actualRowIdx = rows.indexOf(row);
+    html += `<tr class="${isMe?'me':''}" data-n="${empName.toLowerCase()}">
+      <td class="td-name" onclick="toggleEmpHighlight(this)" style="cursor:pointer" title="Click to highlight row">
+        <span class="emp-dot" style="background:${isMe?'var(--accent)':'var(--muted)'}"></span>${empName}
+      </td>`;
+
+    let woCount = 0;
+    for (let d=1;d<=days;d++) {
+      const code   = (row[d+1]||'WO').trim().toUpperCase() || 'WO';
+      const base   = code.startsWith('WFH') ? 'WFH' : code;
+      const isWk   = dow[d-1]===0||dow[d-1]===6;
+      const isTd   = d===todayD;
+      const disp   = code.length>4 ? code.replace('WFH-','W-') : code;
+      const extra  = editable ? `onclick="openShiftEdit(${actualRowIdx},${d},'${code}','${empName}')" title="${empName} · Day ${d}: ${code}"` : `title="${code} · ${SHIFT_META[code]?.label||''}"`;
+      if (code === 'WO') woCount++;
+      html += `<td class="${isWk?'wk':''} ${isTd?'td-today':''}" data-s="${base}">
+        <span class="rc ${shiftClass(code)} ${editable?'editable':''}" ${extra}>${disp}</span>
+      </td>`;
+    }
+    // WO count cell — only in admin panel
+    if (editable) {
+      html += `<td class="td-wo-count" title="${empName}: ${woCount} week off${woCount!==1?'s':''} in ${selectedMonth.replace('_',' ')}">
+        <span class="wo-count-badge">${woCount}</span>
+      </td>`;
+    }
+    html += `</tr>`;
+  });
+
+  // ── TASK 2: tfoot shift-count summary ──────────────────────────────────────
+  // Compute per-day counts for each displayed shift type
+  const SUMMARY_SHIFTS = [
+    { key:'MS',  cls:'sh-MS',  label:'MS'  },
+    { key:'GS',  cls:'sh-GS',  label:'GS'  },
+    { key:'AS',  cls:'sh-AS',  label:'AS'  },
+    { key:'NS',  cls:'sh-NS',  label:'NS'  },
+    { key:'WFH', cls:'sh-WFH', label:'WFH' },
+    { key:'VL',  cls:'sh-VL',  label:'VL'  },
+    { key:'CL',  cls:'sh-CL',  label:'CL'  },
+    { key:'SL',  cls:'sh-SL',  label:'SL'  },
+    { key:'WO',  cls:'sh-WO',  label:'WO'  },
+  ];
+
+  // Build dailyCount[day][shiftKey] = n
+  const dailyCount = {};
+  for (let d = 1; d <= days; d++) {
+    dailyCount[d] = { MS:0, GS:0, AS:0, NS:0, WFH:0, VL:0, CL:0, SL:0, WO:0 };
+    empRows.forEach(row => {
+      const code = (row[d+1]||'WO').trim().toUpperCase();
+      const base = code.startsWith('WFH') ? 'WFH' : code;
+      if (dailyCount[d][base] !== undefined) dailyCount[d][base]++;
+      else dailyCount[d]['WO']++;
+    });
+  }
+
+  html += `</tbody><tfoot>`;
+  SUMMARY_SHIFTS.forEach(s => {
+    html += `<tr><td class="tf-label">${s.label}</td>`;
+    for (let d = 1; d <= days; d++) {
+      const n    = dailyCount[d][s.key] || 0;
+      const isWk = dow[d-1]===0||dow[d-1]===6;
+      const isTd = d===todayD;
+      html += `<td class="${isWk?'wk':''} ${isTd?'td-today':''}">
+        <span class="cnt-chip ${s.cls} ${n===0?'cnt-zero':''}">${n}</span>
+      </td>`;
+    }
+    if (editable) html += `<td class="td-wo-count"></td>`;
+    html += `</tr>`;
+  });
+  html += `</tfoot></table></div>`;
+
+  el.innerHTML = html;
+  activeFilter = 'ALL';
+}
+
+function setTeamFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  filterTeam();
+}
+
+function filterTeam() {
+  const q = (document.getElementById('team-search')?.value || '').toLowerCase();
+  document.querySelectorAll('#team-tt tbody tr').forEach(tr => {
+    const nameMatch = !q || tr.dataset.n?.includes(q);
+    let shiftMatch  = true;
+    if (activeFilter !== 'ALL') shiftMatch = Array.from(tr.querySelectorAll('td[data-s]')).some(td => td.dataset.s === activeFilter);
+    tr.classList.toggle('hidden', !(nameMatch && shiftMatch));
+    if (activeFilter !== 'ALL') {
+      tr.querySelectorAll('.rc').forEach(rc => {
+        const td = rc.closest('td');
+        rc.classList.toggle('rc-dim', td.dataset.s !== activeFilter);
+      });
+    } else {
+      tr.querySelectorAll('.rc').forEach(rc => rc.classList.remove('rc-dim'));
+    }
+  });
+}
+
+/* ══════════════════════════════════════════════════════
+   TAB 3 — ADMIN PANEL
+══════════════════════════════════════════════════════ */
+async function loadAdminPanel() {
+  if (!isAdmin) return;
+  const el = document.getElementById('admin-content');
+  el.innerHTML = `<div class="empty"><div class="spin" style="margin:auto"></div></div>`;
+
+  try {
+    const [rows, logRows] = await Promise.all([
+      getRoster(selectedMonth),
+      loadLeaveLog()
+    ]);
+
+    const days   = getDaysInMonth(selectedMonth);
+    const dow    = getDOWForMonth(selectedMonth);
+    const todayD = getTodayDay(selectedMonth);
+    // Worker col layout: 0=ReqID 1=Date 2=Time 3=EmpName 4=Month 5=ReqType
+    // 6=DateAffected 7=OrigShift 8=NewShift 9=SwapPartner 10=Status 11=Notes
+    const STATUS_COL = 10;
+    const pending = logRows.filter(r => (r[STATUS_COL] === 'Pending' || r[9] === 'Pending'));
+
+    let html = `
+    <!-- Section A: Editable Roster -->
+    <div class="admin-section" style="margin-top:0">
+      <div id="admin-roster-wrap">`;
+
+    // Render table (editable=true)
+    const wrap = document.createElement('div');
+    renderTeamTable(wrap, rows, days, dow, todayD, true);
+    html += wrap.innerHTML;
+
+    html += `</div></div>
+
+    <!-- Section B: Leave & Swap Queue -->
+    <div class="admin-section">
+      <h3>📩 Pending Requests <span class="cnt">${pending.length}</span></h3>
+      <div id="leave-queue">`;
+
+    if (pending.length === 0) {
+      html += `<div class="empty" style="padding:24px"><div class="empty-icon">✅</div><p>No pending requests.</p></div>`;
+    } else {
+      pending.forEach((r, ri) => {
+        html += `
+        <div class="req-card" id="req-${ri}">
+          <div class="req-info">
+            <div class="req-id">${r[0]} · ${r[1]} · ${r[4]||r[2]}</div>
+            <div class="req-emp">${r[3]}</div>
+            <div class="req-det">${r[5]||r[4]} · Date: ${r[6]||r[5]} · ${r[7]||r[6]} → ${r[8]||r[7]}${(r[9]&&r[9]!=='—')?' · Swap with: '+r[9]:''}</div>
+          </div>
+          <span class="req-status pending">Pending</span>
+          <div class="req-actions">
+            <button class="btn btn-success" style="padding:6px 12px;font-size:.76rem" onclick="processRequest(${ri},'Approved','${r[0]}','${r[3]}','${r[6]||r[5]}','${r[8]||r[7]}')">✓ Approve</button>
+            <button class="btn btn-danger"  style="padding:6px 12px;font-size:.76rem" onclick="processRequest(${ri},'Rejected','${r[0]}','${r[3]}','${r[6]||r[5]}','${r[8]||r[7]}')">✗ Reject</button>
+          </div>
+        </div>`;
+      });
+    }
+
+    html += `</div></div>
+
+    <!-- Section C: Audit Log — latest 50 changes, scrollable -->
+    <div class="admin-section">
+      <h3>📜 Recent Changes <span style="font-size:.7rem;font-weight:500;color:var(--muted)">(last 50 · ${selectedMonth.replace('_',' ')} & all months)</span></h3>
+      <div class="card" id="audit-log-body" style="max-height:340px;overflow-y:auto;padding:0;">`;
+
+    const latest50 = logRows.slice().reverse().slice(0, 50);
+
+    if (!latest50.length) {
+      html += `<p style="font-size:.8rem;color:var(--muted);padding:16px">No changes recorded yet.</p>`;
+    } else {
+      html += `<div style="padding:4px 0">`;
+      latest50.forEach(r => {
+        const rStatus = r[10] || r[9] || 'Pending';
+        const statusColor = rStatus==='Approved'?'var(--green)':rStatus==='Rejected'?'var(--red)':'var(--yellow)';
+        const monthTag = (r[4]||r[2]||'').toString().trim();
+        const origShift = r[7]||r[6]||'—';
+        const newShift  = r[8]||r[7]||'—';
+        html += `<div class="audit-row" data-month="${monthTag}" style="padding:8px 16px">
+          <div class="audit-time">${r[1]||'—'} · ${r[2]||''}</div>
+          <div style="flex:1"><strong>${r[3]}</strong>
+            <span style="color:var(--muted);font-size:.72rem;margin-left:4px">${r[5]||r[4]||''}</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:.7rem;margin-left:4px">
+              <span class="rc ${shiftClassSafe(origShift)}" style="display:inline-flex;width:auto;padding:0 5px">${origShift}</span>
+              → <span class="rc ${shiftClassSafe(newShift)}" style="display:inline-flex;width:auto;padding:0 5px">${newShift}</span>
+            </span>
+          </div>
+          <span style="color:${statusColor};font-size:.72rem;font-family:'JetBrains Mono',monospace;white-space:nowrap">${rStatus}</span>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+
+    html += `</div></div>`;
+
+    el.innerHTML = html;
+  } catch(e) {
+    el.innerHTML = `<div class="err-box" style="display:block">❌ ${e.message}</div>`;
+  }
+}
+
+async function loadLeaveLog() {
+  if (leaveLogCache) return leaveLogCache;
+  const rows = await sheetsRead('Leave_Swap_Log!A3:L500');
+  leaveLogCache = rows.filter(r => r[0]);
+  return leaveLogCache;
+}
+
+async function checkPendingRequests() {
+  try {
+    const rows    = await loadLeaveLog();
+    pendingCount  = rows.filter(r => r[10] === 'Pending' || r[9] === 'Pending').length;
+    const badge   = document.getElementById('pending-badge');
+    if (badge) {
+      badge.textContent = pendingCount;
+      badge.style.display = pendingCount > 0 ? 'inline' : 'none';
+    }
+  } catch(e) { /* silent */ }
+}
+
+/* ── Edit Shift Cell (Admin) ── */
+function openShiftEdit(empRowIdx, day, currentCode, empName) {
+  document.getElementById('modal-content').innerHTML = `
+    <h3>✏️ Edit Shift — ${empName}</h3>
+    <p style="font-size:.78rem;color:var(--text2);margin-bottom:16px">
+      Day ${day} · ${selectedMonth.replace('_',' ')} · Current: <strong style="color:${SHIFT_META[currentCode]?.fg||'#94A3B8'}">${currentCode}</strong>
+    </p>
+    <p style="font-size:.72rem;color:var(--muted);margin-bottom:10px;font-family:'JetBrains Mono',monospace">Select new shift code:</p>
+    <div class="shift-picker">
+      ${ALL_CODES.map(code => `
+        <div class="sp-btn ${shiftClass(code)} ${code===currentCode?'selected':''}"
+          style="background:${SHIFT_META[code]?.bg};color:${SHIFT_META[code]?.fg}"
+          onclick="selectShiftCode('${code}',this)"
+          data-code="${code}">${code}</div>
+      `).join('')}
+    </div>
+    <div class="modal-field" style="margin-top:14px">
+      <label>Reason (for audit log)</label>
+      <input type="text" id="edit-reason" placeholder="Admin correction, leave approved…">
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveShiftEdit(${empRowIdx},${day},'${currentCode}','${empName}')">Save Change</button>
+    </div>`;
+  openModal();
+}
+
+function selectShiftCode(code, el) {
+  document.querySelectorAll('.sp-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  el.dataset.selected = 'true';
+}
+
+async function saveShiftEdit(empRowIdx, day, oldCode, empName) {
+  const selectedEl = document.querySelector('.sp-btn.selected');
+  if (!selectedEl) { alert('Please select a shift code'); return; }
+  const newCode = selectedEl.dataset.code;
+  if (newCode === oldCode) { closeModal(); return; }
+
+  try {
+    await callAppsScript({
+      action:       'editShift',
+      month:        selectedMonth,
+      empRowIndex:  empRowIdx,
+      day:          day,
+      oldCode:      oldCode,
+      newCode:      newCode,
+      empName:      empName,
+      adminEmail:   userEmail
+    });
+
+    // Invalidate full cache so fresh data loads for everyone
+    rosterCache   = {};
+    leaveLogCache = null;
+
+    closeModal();
+    showToast(`✅ ${empName} Day ${day}: ${oldCode} → ${newCode}`);
+
+    // ── Email: notify affected employee (admin sends from their Gmail) ────────
+    const empRecord  = employeeMaster.find(e => e.name.toLowerCase() === empName.toLowerCase());
+    const empEmail   = empRecord?.email;
+    if (empEmail && empEmail !== userEmail) {
+      const [m, y]    = selectedMonth.split('_');
+      const monthLabel = `${m} ${y}`;
+      sendEmailViaGmail(
+        empEmail,
+        `[SOC Roster] Your shift has been updated — ${monthLabel}, Day ${day}`,
+        `Hi ${empName},\n\n` +
+        `Your shift has been updated by the admin.\n\n` +
+        `Month : ${monthLabel}\n` +
+        `Day   : ${day}\n` +
+        `From  : ${oldCode}  (${SHIFT_META[oldCode]?.label || oldCode})\n` +
+        `To    : ${newCode}  (${SHIFT_META[newCode]?.label || newCode})\n\n` +
+        `Please check your updated roster in the SOC Roster Hub.\n` +
+        `If you have calendar auto-sync enabled, your SOC Roster calendar will update automatically.\n\n` +
+        `— SOC Roster Hub`
+      );
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
+    await loadAdminPanel();
+  } catch(e) {
+    alert('Failed to save: ' + e.message);
+  }
+}
+
+/* ── Approve / Reject Request ── */
+async function processRequest(localIdx, action, reqId, empName, dateStr, newCode) {
+  try {
+    await callAppsScript({
+      action:     'processRequest',
+      reqId:      reqId,
+      decision:   action,
+      adminEmail: userEmail
+    });
+
+    // Clear caches so fresh data loads
+    leaveLogCache = null;
+    rosterCache   = {};
+
+    showToast(`${action === 'Approved' ? '✅' : '❌'} Request ${action.toLowerCase()}`);
+
+    // ── Email: notify employee of approval or rejection ────────────────────────
+    const empRecord  = employeeMaster.find(e => e.name.toLowerCase() === empName.toLowerCase());
+    const empEmail   = empRecord?.email;
+    if (empEmail) {
+      const approved = action === 'Approved';
+      sendEmailViaGmail(
+        empEmail,
+        `[SOC Roster] Your request has been ${action} — ${reqId}`,
+        `Hi ${empName},\n\n` +
+        `Your shift change request has been ${action.toLowerCase()} by the admin.\n\n` +
+        `Request : ${reqId}\n` +
+        `Date    : ${dateStr}\n` +
+        `New shift: ${newCode}\n\n` +
+        (approved
+          ? `Your roster has been updated. If you have calendar auto-sync enabled, your SOC Roster calendar will update automatically.`
+          : `No changes have been made to your roster. Please contact your admin if you have questions.`) +
+        `\n\n— SOC Roster Hub`
+      );
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
+    checkPendingRequests();
+    await loadAdminPanel();
+  } catch(e) {
+    alert('Failed to process request: ' + e.message);
+  }
+}
+
+// ── Task 3: Toggle audit log between current-month and all-months view ─────────
+function toggleAuditAll(showAll) {
+  const body = document.getElementById('audit-log-body');
+  if (!body) return;
+  const currentMonthLabel = selectedMonth.replace('_', ' ');
+  body.querySelectorAll('.audit-row').forEach(row => {
+    const rowMonth = (row.dataset.month || '').trim();
+    if (showAll) {
+      row.style.display = '';  // show all rows
+    } else {
+      row.style.display = (rowMonth === currentMonthLabel) ? '' : 'none';
+    }
+  });
+  // Show "no entries" message if nothing visible
+  const visible = Array.from(body.querySelectorAll('.audit-row'))
+    .filter(r => r.style.display !== 'none');
+  let noMsg = body.querySelector('.audit-no-msg');
+  if (!visible.length) {
+    if (!noMsg) {
+      noMsg = document.createElement('p');
+      noMsg.className = 'audit-no-msg';
+      noMsg.style.cssText = 'font-size:.8rem;color:var(--muted)';
+      noMsg.textContent = showAll ? 'No changes recorded yet.' : `No changes recorded for ${currentMonthLabel} yet.`;
+      body.appendChild(noMsg);
+    }
+  } else if (noMsg) {
+    noMsg.remove();
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════════════════ */
+function openModal() {
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+
+/* ══════════════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════
+   CALENDAR — AUTO-SYNC & DE-SYNC (Task 3)
+══════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════
+   CALENDAR — AUTO-SYNC & DE-SYNC
+══════════════════════════════════════════════════════ */
+
+// ── Load auto-sync preference (called once My Shifts tab renders) ──
+function loadAutoSyncPref() {
+  const pref = localStorage.getItem('soc_autosync_' + userEmail) === 'true';
+  const toggle = document.getElementById('autosync-toggle');
+  if (toggle) {
+    toggle.checked = pref;
+    updateAutoSyncLabel(pref);
+  }
+  updateLastSyncLabel();
+  // Reflect current server-sync status in the badge (re-check each time tab renders)
+  checkServerSyncStatus();
+}
+
+function updateAutoSyncLabel(on) {
+  const lbl = document.getElementById('autosync-label');
+  if (lbl) {
+    lbl.textContent = on ? 'Auto-sync: ON' : 'Auto-sync: OFF';
+    lbl.style.color = on ? 'var(--green)' : 'var(--muted)';
+  }
+}
+
+function updateLastSyncLabel() {
+  const el = document.getElementById('last-sync-info');
+  if (!el) return;
+  const ts = localStorage.getItem('soc_last_sync_' + userEmail);
+  if (ts && ts !== '1970-01-01T00:00:00.000Z') {
+    const d = new Date(ts);
+    el.textContent = `Last synced: ${d.toLocaleDateString('en-IN')} at ${d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})} IST`;
+  } else {
+    el.textContent = 'Not yet synced this session';
+  }
+}
+
+function toggleAutoSync(on) {
+  localStorage.setItem('soc_autosync_' + userEmail, on ? 'true' : 'false');
+  updateAutoSyncLabel(on);
+  if (on) {
+    showToast('🔄 Auto-sync ON — syncing calendar now…');
+    // FIX (Bug 5 — race condition): Reset soc_last_sync_ to epoch so the
+    // poller comparison will always detect the latest server flag as "newer",
+    // guaranteeing a sync on the very next poller tick AND immediately now.
+    localStorage.setItem('soc_last_sync_' + userEmail, '1970-01-01T00:00:00.000Z');
+    syncCalendar(); // immediate sync with UI progress bar
+    // The unified poller (already running since login) will handle future syncs.
+  } else {
+    showToast('Auto-sync OFF');
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   UNIFIED UI REFRESH + AUTO-SYNC POLLER  (30s)
+   ─────────────────────────────────────────────────────
+   Replaces the old autoSyncPoller architecture.
+
+   Runs every 30 seconds from the moment the user logs in.
+   Does TWO independent jobs using TWO separate localStorage keys:
+
+   Job 1 — UI refresh (always, regardless of auto-sync toggle):
+     Key: soc_last_ui_refresh_<email>
+     If serverTs > uiLocalTs → clear caches → reload active tab
+     → stamps soc_last_ui_refresh_ with serverTs
+
+   Job 2 — Calendar auto-sync (only when auto-sync pref = ON):
+     Key: soc_last_sync_<email>
+     If serverTs > syncLocalTs → run syncCalendarHeadless() silently
+     → stamps soc_last_sync_ with serverTs
+
+   Why two separate keys?
+     syncCalendar() stamps soc_last_sync_ with "now" (wall-clock time),
+     which could be NEWER than a server flag written 5 minutes ago.
+     soc_last_ui_refresh_ is always stamped with the server's flag timestamp,
+     so there's no race condition between the two comparisons.
+══════════════════════════════════════════════════════ */
+function startUIRefreshPoller() {
+  stopUIRefreshPoller();
+  uiRefreshPoller = setInterval(checkAndRefreshUI, 30000); // 30 seconds
+  console.log('[UIPoller] Started (30s interval)');
+}
+
+function stopUIRefreshPoller() {
+  if (uiRefreshPoller) {
+    clearInterval(uiRefreshPoller);
+    uiRefreshPoller = null;
+    console.log('[UIPoller] Stopped');
+  }
+}
+
+async function checkAndRefreshUI() {
+  // FIX (Bug 4 — token expiry): If token is gone, stop the poller and notify.
+  if (!token || !userEmail) {
+    stopUIRefreshPoller();
+    showToast('⚠️ Session expired — please sign in again');
+    return;
+  }
+
+  try {
+    const result = await callAppsScript({ action: 'getSyncFlag' });
+    if (!result || !result.ts) return; // No flag in Sync_Flags yet — skip silently.
+
+    const serverTs    = new Date(result.ts).getTime();
+    const uiLocalTs   = new Date(localStorage.getItem('soc_last_ui_refresh_' + userEmail) || 0).getTime();
+    const syncLocalTs = new Date(localStorage.getItem('soc_last_sync_' + userEmail) || 0).getTime();
+
+    // ── Job 1: Refresh the roster UI grid ───────────────────────────────────
+    if (serverTs > uiLocalTs) {
+      console.log('[UIPoller] Server change detected — refreshing UI…');
+      rosterCache   = {};
+      leaveLogCache = null;
+      // FIX (Task 1): Reload whichever tab is currently active.
+      if      (activeTab === 'my-shifts')   await loadMyShifts();
+      else if (activeTab === 'team-roster') await loadTeamRoster();
+      else if (activeTab === 'admin-panel') await loadAdminPanel();
+      localStorage.setItem('soc_last_ui_refresh_' + userEmail, result.ts);
+      showToast('🔄 Roster updated — shifts refreshed automatically');
+    }
+
+    // ── Job 2: Calendar auto-sync ────────────────────────────────────────────
+    const pref = localStorage.getItem('soc_autosync_' + userEmail) === 'true';
+    if (pref && serverTs > syncLocalTs) {
+      console.log('[UIPoller] Auto-syncing calendar (headless)…');
+      // FIX (Bug 2+3): Call syncCalendarHeadless() — no DOM dependency.
+      // syncCalendar() would crash if My Shifts tab isn't active.
+      try {
+        await syncCalendarHeadless();
+        localStorage.setItem('soc_last_sync_' + userEmail, result.ts);
+        updateLastSyncLabel();
+        showToast('✅ Calendar auto-synced with updated roster!');
+      } catch(calErr) {
+        console.warn('[UIPoller] Calendar sync error:', calErr.message);
+        showToast('⚠️ Auto-sync: calendar update failed — ' + calErr.message);
+      }
+    }
+  } catch(e) {
+    // Silent fail — poller errors must never disrupt the user's workflow.
+    console.warn('[UIPoller] Poll error:', e.message);
+  }
+}
+
+// ── Legacy stubs — kept so nothing breaks if referenced elsewhere ─────────────
+function startAutoSyncPoller() { /* replaced by startUIRefreshPoller — no-op */ }
+function stopAutoSyncPoller() {
+  if (autoSyncPoller) { clearInterval(autoSyncPoller); autoSyncPoller = null; }
+}
+
+// ── De-sync modal ──
+function openDesyncModal() {
+  document.getElementById('modal-content').innerHTML = `
+    <h3>🗑️ De-sync Calendar</h3>
+    <p style="font-size:.82rem;color:var(--text2);margin-bottom:20px;line-height:1.6">
+      Remove SOC shift events from your <strong>SOC Roster</strong> calendar.
+    </p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="card-sm" style="cursor:pointer;border:1px solid var(--border);border-radius:10px;padding:14px;transition:border-color .2s"
+        onclick="doDesync('month')" onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-weight:700;margin-bottom:4px">📅 This month only</div>
+        <div style="font-size:.78rem;color:var(--muted)">Remove all ${selectedMonth.replace('_',' ')} shifts from your calendar</div>
+      </div>
+      <div class="card-sm" style="cursor:pointer;border:1px solid var(--border);border-radius:10px;padding:14px;transition:border-color .2s"
+        onclick="doDesync('all')" onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-weight:700;margin-bottom:4px">🗑️ All SOC shifts</div>
+        <div style="font-size:.78rem;color:var(--muted)">Delete the entire SOC Roster calendar and all its events</div>
+      </div>
+    </div>
+    <div class="modal-btns"><button class="btn btn-outline" onclick="closeModal()">Cancel</button></div>`;
+  openModal();
+}
+
+async function doDesync(scope) {
+  closeModal();
+  const btn         = document.getElementById('sync-cal-btn');
+  const progressDiv = document.getElementById('sync-progress');
+  const resultDiv   = document.getElementById('sync-result');
+
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ De-syncing…'; }
+  if (progressDiv) progressDiv.style.display = 'block';
+  if (resultDiv)   resultDiv.innerHTML = '';
+
+  try {
+    let calId = localStorage.getItem('soc_calendar_id_' + userEmail);
+    if (!calId) {
+      document.getElementById('sync-txt').textContent = 'Looking for SOC Roster calendar…';
+      const list = await apiFetch('https://www.googleapis.com/calendar/v3/users/me/calendarList');
+      const cal  = (list.items || []).find(c => c.summary === SOC_CAL_NAME);
+      if (!cal) {
+        if (progressDiv) progressDiv.style.display = 'none';
+        showToast('ℹ️ No SOC Roster calendar found');
+        if (btn) { btn.disabled = false; btn.textContent = '📅 Sync to SOC Calendar'; }
+        return;
+      }
+      localStorage.setItem('soc_calendar_id_' + userEmail, cal.id);
+      calId = cal.id;
+    }
+
+    if (scope === 'month') {
+      const ym = monthToYM(selectedMonth);
+      const [year, mo] = ym.split('-').map(Number);
+      const tMin = `${ym}-01T00:00:00Z`;
+      const tMax = `${year}-${String(mo < 12 ? mo+1 : 1).padStart(2,'0')}-01T00:00:00Z`;
+
+      // Phase 1: fetch all events to know the total count
+      document.getElementById('sync-txt').textContent = 'Fetching events to remove…';
+      document.getElementById('prog-f').style.width = '0%';
+      document.getElementById('prog-l').textContent  = '0/0';
+      document.getElementById('prog-r').textContent  = '0%';
+
+      let allEvents = [], pageToken = null;
+      do {
+        const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calId)}/events?` +
+          `timeMin=${tMin}&timeMax=${tMax}&maxResults=250&singleEvents=true` +
+          (pageToken ? `&pageToken=${pageToken}` : '');
+        const data = await apiFetch(url);
+        allEvents  = allEvents.concat(data.items || []);
+        pageToken  = data.nextPageToken || null;
+      } while (pageToken);
+
+      const total = allEvents.length;
+      let done = 0;
+
+      // Phase 2: delete one by one with progress
+      for (const ev of allEvents) {
+        document.getElementById('sync-txt').textContent = `Removing event ${done + 1} of ${total}…`;
+        await apiFetch(
+          `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calId)}/events/${ev.id}`,
+          { method: 'DELETE' }
+        );
+        done++;
+        const pct = Math.round(done / total * 100);
+        document.getElementById('prog-f').style.width  = pct + '%';
+        document.getElementById('prog-l').textContent  = `${done}/${total}`;
+        document.getElementById('prog-r').textContent  = pct + '%';
+        await new Promise(r => setTimeout(r, 50));
+      }
+
+      localStorage.removeItem('soc_last_sync_' + userEmail);
+      updateLastSyncLabel();
+
+      progressDiv.style.display = 'none';
+      resultDiv.innerHTML = `
+        <div class="sync-done" style="background:linear-gradient(135deg,rgba(239,68,68,.1),rgba(245,158,11,.05));border-color:rgba(239,68,68,.3)">
+          <div style="font-size:2rem;margin-bottom:8px">🗑️</div>
+          <h3 style="color:var(--red)">De-synced!</h3>
+          <p>${selectedMonth.replace('_',' ')} shifts removed from your SOC Roster calendar.</p>
+          <div class="sync-stats">
+            <div class="stat-box"><div class="n" style="color:var(--red)">${done}</div><div class="l">Removed</div></div>
+            <div class="stat-box"><div class="n" style="color:var(--text2)">${selectedMonth.replace('_',' ')}</div><div class="l">Month</div></div>
+            <div class="stat-box"><div class="n" style="color:var(--accent)">0</div><div class="l">Remaining</div></div>
+          </div>
+        </div>`;
+
+    } else {
+      // Delete entire calendar — indeterminate progress
+      document.getElementById('sync-txt').textContent = 'Deleting SOC Roster calendar…';
+      document.getElementById('prog-f').style.width  = '60%';
+      document.getElementById('prog-l').textContent  = '…';
+      document.getElementById('prog-r').textContent  = '';
+
+      await apiFetch(
+        `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calId)}`,
+        { method: 'DELETE' }
+      );
+
+      document.getElementById('prog-f').style.width = '100%';
+      localStorage.removeItem('soc_calendar_id_' + userEmail);
+      localStorage.removeItem('soc_last_sync_' + userEmail);
+      updateLastSyncLabel();
+
+      progressDiv.style.display = 'none';
+      resultDiv.innerHTML = `
+        <div class="sync-done" style="background:linear-gradient(135deg,rgba(239,68,68,.1),rgba(245,158,11,.05));border-color:rgba(239,68,68,.3)">
+          <div style="font-size:2rem;margin-bottom:8px">🗑️</div>
+          <h3 style="color:var(--red)">Calendar Deleted!</h3>
+          <p>The <strong>SOC Roster</strong> calendar and all its events have been removed from your Google Calendar.</p>
+        </div>`;
+    }
+
+  } catch(e) {
+    if (progressDiv) progressDiv.style.display = 'none';
+    if (resultDiv)   resultDiv.innerHTML = `<div class="err-box" style="display:block">❌ De-sync failed: ${e.message}</div>`;
+  }
+
+  if (btn) { btn.disabled = false; btn.textContent = '📅 Sync to SOC Calendar'; }
+}
+
+/* ══════════════════════════════════════════════════════
+   TASK 3 — Employee Row Highlight
+   Click any name cell to highlight the entire row.
+   Click again or a different name to change selection.
+══════════════════════════════════════════════════════ */
+function toggleEmpHighlight(nameTd) {
+  const tr = nameTd.closest('tr');
+  // Deselect if clicking the already-selected row
+  if (selectedEmpRow === tr) {
+    tr.classList.remove('emp-hl');
+    selectedEmpRow = null;
+    return;
+  }
+  // Clear any existing highlight across all tables
+  document.querySelectorAll('table.tt tbody tr.emp-hl')
+    .forEach(r => r.classList.remove('emp-hl'));
+  tr.classList.add('emp-hl');
+  selectedEmpRow = tr;
+}
+
+/* ══════════════════════════════════════════════════════
+   TASK 4 — Day Column Vertical Highlight
+   Click a date number in the header to highlight the
+   entire column (all rows for that day). Click again
+   or another day to switch. Works in Team Roster and
+   Admin Panel.
+══════════════════════════════════════════════════════ */
+function toggleDayHighlight(dayNum, headerTh) {
+  const table = headerTh.closest('table');
+  if (!table) return;
+
+  // If clicking the same column → deselect
+  if (selectedDayCol === dayNum) {
+    table.querySelectorAll('.col-hl').forEach(el => el.classList.remove('col-hl'));
+    selectedDayCol = null;
+    return;
+  }
+
+  // Clear previous column highlight
+  table.querySelectorAll('.col-hl').forEach(el => el.classList.remove('col-hl'));
+
+  // The day number header is at position dayNum among data <th>s (1-indexed).
+  // Highlight r-dates header
+  table.querySelectorAll('thead tr.r-dates th:not(.th-name)').forEach((th, i) => {
+    if (i + 1 === dayNum) th.classList.add('col-hl');
+  });
+  // Highlight r-dow header
+  table.querySelectorAll('thead tr.r-dow th:not(.th-name)').forEach((th, i) => {
+    if (i + 1 === dayNum) th.classList.add('col-hl');
+  });
+  // Highlight body cells — each visible row
+  table.querySelectorAll('tbody tr:not(.hidden)').forEach(tr => {
+    const dataCells = tr.querySelectorAll('td:not(.td-name)');
+    if (dataCells[dayNum - 1]) dataCells[dayNum - 1].classList.add('col-hl');
+  });
+  // Highlight tfoot cells
+  table.querySelectorAll('tfoot tr').forEach(tr => {
+    const dataCells = tr.querySelectorAll('td:not(.tf-label)');
+    if (dataCells[dayNum - 1]) dataCells[dayNum - 1].classList.add('col-hl');
+  });
+
+  selectedDayCol = dayNum;
+}
+
+/* ══════════════════════════════════════════════════════
+   TASK 1 — Server-Side Calendar Sync
+   One-time setup stores a refresh_token in Cloudflare KV
+   via the Worker. After that, every admin shift edit
+   triggers a direct server→calendar sync — no browser needed.
+
+   SETUP REQUIRED IN CLOUDFLARE (one-time):
+     1. Create KV namespace "SOC_TOKENS" in Cloudflare dashboard
+     2. In wrangler.toml: [[kv_namespaces]] binding="SOC_TOKENS" id="<id>"
+     3. Add env vars: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+══════════════════════════════════════════════════════ */
+
+// Called on login — updates badge to show if KV token already exists
+async function checkServerSyncStatus() {
+  try {
+    const result = await callAppsScript({ action: 'checkServerSync' });
+    updateServerSyncUI(result.enabled === true);
+  } catch(e) {
+    console.warn('[ServerSync] status check failed:', e.message);
+  }
+}
+
+// Update the badge + button to reflect current state
+function updateServerSyncUI(enabled) {
+  const badge = document.getElementById('serversync-badge');
+  const btn   = document.getElementById('serversync-btn');
+  if (!badge || !btn) return;
+  if (enabled) {
+    badge.className   = 'serversync-badge on';
+    badge.textContent = '⚡ Background Sync: ON';
+    btn.textContent   = 'Revoke';
+    btn.className     = 'btn-serversync revoke';
+    btn.onclick       = revokeServerSync;
+  } else {
+    badge.className   = 'serversync-badge off';
+    badge.textContent = '⚡ Background Sync: OFF';
+    btn.textContent   = 'Enable Background Sync';
+    btn.className     = 'btn-serversync';
+    btn.onclick       = enableServerSync;
+  }
+}
+
+// Kick off the one-time offline OAuth code flow
+function enableServerSync() {
+  if (!codeClient) { showToast('⚠️ Google API not ready, please retry in a moment'); return; }
+  showToast('🔐 Opening Google consent — please approve calendar access…');
+  // prompt=consent forces Google to return refresh_token even if previously granted
+  codeClient.requestCode();
+}
+
+// Called by GIS after the user approves the consent screen
+async function handleAuthCode(resp) {
+  if (resp.error) {
+    showToast('❌ Background sync cancelled: ' + resp.error);
+    return;
+  }
+  const badge = document.getElementById('serversync-badge');
+  const btn   = document.getElementById('serversync-btn');
+  if (badge) { badge.textContent = '⏳ Storing token…'; }
+  if (btn)   { btn.disabled = true; btn.textContent = 'Setting up…'; }
+
+  try {
+    const result = await callAppsScript({ action: 'storeRefreshToken', code: resp.code });
+    if (!result.ok && result.error === 'no_refresh_token') {
+      showToast('⚠️ Google did not return a refresh token. Revoke app access at myaccount.google.com/permissions and try again.');
+      updateServerSyncUI(false);
+      if (btn) btn.disabled = false;
+      return;
+    }
+    showToast('✅ Background sync enabled! Calendar will update even when you\'re offline.');
+    updateServerSyncUI(true);
+  } catch(e) {
+    showToast('❌ Failed to enable background sync: ' + e.message);
+    updateServerSyncUI(false);
+    if (btn) btn.disabled = false;
+  }
+}
+
+// Remove the stored token from KV
+async function revokeServerSync() {
+  try {
+    await callAppsScript({ action: 'revokeServerSync' });
+    showToast('🗑️ Background sync revoked — calendar will only sync when you\'re logged in.');
+    updateServerSyncUI(false);
+  } catch(e) {
+    showToast('❌ Revoke failed: ' + e.message);
+  }
+}
+
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = `position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--s2);
+      border:1px solid var(--border2);color:var(--text);padding:10px 20px;border-radius:10px;
+      font-size:.82rem;z-index:300;transition:opacity .3s;white-space:nowrap;font-family:'JetBrains Mono',monospace;`;
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  setTimeout(() => { t.style.opacity = '0'; }, 3000);
+}
+</script>
+</body>
+</html>
