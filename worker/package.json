@@ -1,5 +1,8 @@
 {
   "name": "soc-roster-hub-worker",
   "version": "1.0.0",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "wrangler": "^3.107.0"
+  }
 }
