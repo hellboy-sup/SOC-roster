@@ -28,6 +28,6 @@ This file tracks major technical and architectural changes made to the repositor
 - Removed unused and vulnerable utility functions (`sheetsRead`, `sheetsWrite`, `sheetsAppend`) from the frontend.
 - Removed overly permissive `spreadsheets` OAuth scope from client requests.
 
-### Fixed
+### Fixed 
 - Fixed bug where `roster-engine.js` auto-executed IIFE on script load before the DOM elements were injected, resolving console errors on initial load.
 - Resolved `origin_mismatch` errors by ensuring proper Google Cloud Console OAuth redirect configuration.
