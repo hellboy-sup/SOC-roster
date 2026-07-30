@@ -3,30 +3,5 @@ main = "src/index.js"
 compatibility_date = "2026-07-29"
 compatibility_flags = ["nodejs_compat"]
 
-[observability]
-enabled = true
-
-[observability.logs]
-enabled = true
-
-[[kv_namespaces]]
-binding = "SOC_TOKENS"
-id = "497320e5d46a4ba59b87d8bc86ccd8d7"
-
-[[kv_namespaces]]
-binding = "ADMIN_ALLOWLIST"
-id = "ca0feafc2c4f488d8184b25795417500"
-
-[[kv_namespaces]]
-binding = "RATE_LIMIT"
-id = "48eca3c267914fdc851bf7ab59f1d46d"
-
-[vars]
-SHEET_ID = "1MY9aFaaUdSmqUP2V3gXt0emNMONlubgOfVqoV2mLpoY"
-APPS_SCRIPT_URL = "<your-apps-script-url>"
-
-# Secrets (set via Cloudflare Dashboard → Worker → Settings → Variables & Secrets)
-# SA_EMAIL
-# SA_PRIVATE_KEY
-# GOOGLE_CLIENT_ID
-# GOOGLE_CLIENT_SECRET
+# All KV bindings, secrets, and environment variables
+# are managed via the Cloudflare Dashboard.
