@@ -5,14 +5,15 @@ compatibility_flags = ["nodejs_compat"]
 
 [[kv_namespaces]]
 binding = "SOC_TOKENS"
-id = "497320e5d46a4ba59b87d8bc86ccd8d7"
+id = "8e6c8d927d874a928d289792ee2a981b"
 
 [[kv_namespaces]]
 binding = "ADMIN_ALLOWLIST"
-id = "ca0feafc2c4f488d8184b25795417500"
+id = "18287c9b936e41acaef4bdef7e9a7a35"
 
 [[kv_namespaces]]
 binding = "RATE_LIMIT"
-id = "48eca3c267914fdc851bf7ab59f1d46d"
+id = "0b95ba4740b841508d0af264629277a3"
+
 
 # All secrets managed via Cloudflare Dashboard → Worker → Settings → Variables & Secrets
