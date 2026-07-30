@@ -2,6 +2,13 @@
 
 This file tracks major technical and architectural changes made to the repository.
 
+## [2026-07-30] Deployment Configuration
+
+### Changed
+- Configured Cloudflare deployments for modular architecture:
+  - **Worker API**: `soc-roster-hub.navoneeldas001.workers.dev` (Build root directory updated from `/` to `worker`).
+  - **Frontend UI**: `soc-roster-hub.pages.dev` (Build root directory explicitly set to `frontend`).
+
 ## [2026-07-29] Phase 2: Roster Builder Merge & Security Hardening
 
 ### Added
